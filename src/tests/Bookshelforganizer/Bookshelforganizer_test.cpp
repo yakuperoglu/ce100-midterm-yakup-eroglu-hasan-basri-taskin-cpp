@@ -139,3 +139,34 @@ TEST_F(TryTest, loanManagementMenuTest) {
 	bool result = loanManagementMenu();
 	EXPECT_TRUE(result);
 }
+
+TEST_F(TryTest, wishListMenuTest) {
+	bool result = wishListMenu();
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, getNewUserIdTest) {
+	const int userCount = 3;
+	User users[userCount] = {
+		{1, "John", "Doe", "john@example.com", "john123"},
+		{2, "Alice", "Smith", "alice@example.com", "alice123"},
+		{3, "Bob", "Johnson", "bob@example.com", "bob123"}
+	};
+
+	int newUserId = getNewUserId(users, userCount);
+
+	int expectedNewUserId = 4;
+
+	EXPECT_EQ(expectedNewUserId, newUserId);
+}
+
+TEST_F(TryTest, getNewUserIdTest_NoUser) {
+	const int userCount = 0;
+	User users[1];
+
+	int newUserId = getNewUserId(users, userCount);
+
+	int expectedNewUserId = 1;
+
+	EXPECT_EQ(expectedNewUserId, newUserId);
+}
