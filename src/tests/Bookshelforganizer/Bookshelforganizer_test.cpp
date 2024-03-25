@@ -1122,3 +1122,109 @@ TEST_F(TryTest, suggestBooksToBorrowTest) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, SwapTest_SwapBooks) {
+	Book book1 = { 1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10 };
+	Book book2 = { 2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20 };
+
+	swap(&book1, &book2);
+
+	EXPECT_EQ(book1.id, 1);
+}
+
+TEST_F(TryTest, PartitionTest_PartitionBooks) {
+	Book books[5] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Mike", "", "", ""}, 0, 40},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "Eve", "", "", ""}, 0, 50}
+	};
+
+	int pivotIndex = partition(books, 0, 4);
+
+	EXPECT_EQ(books[pivotIndex].id, 5);
+	EXPECT_EQ(pivotIndex, 4);
+}
+
+TEST_F(TryTest, RandomPartitionTest_RandomPartitionBooks) {
+	Book books[5] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Mike", "", "", ""}, 0, 40},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "Eve", "", "", ""}, 0, 50}
+	};
+
+	int pivotIndex = randomPartition(books, 0, 4);
+
+	EXPECT_GE(pivotIndex, 0);
+	EXPECT_LE(pivotIndex, 4);
+}
+
+TEST_F(TryTest, RandomizedQuickSortTest_RandomizedQuickSortBooks) {
+	Book books[5] = {
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Mike", "", "", ""}, 0, 40},
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "Eve", "", "", ""}, 0, 50}
+	};
+
+	int result = randomizedQuickSortBookIds(books, 0, 4);
+
+	EXPECT_EQ(result, 1);
+}
+
+TEST_F(TryTest, FindLCSTest_LCSBetweenStrings) {
+	const char* s1 = "abcd";
+	const char* s2 = "acdb";
+
+	double expectedLCS = 0.5;
+
+	double result = findLCS(s1, s2);
+
+	bool isEqual = (result == expectedLCS);
+
+	EXPECT_FALSE(isEqual);
+}
+
+TEST_F(TryTest, MainMatrixTest_BooksFoundTest) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	Book books[] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {1, "John", "", "", ""}, 0, 10}
+	};
+	int bookCount = sizeof(books) / sizeof(books[0]);
+
+	FILE* file = fopen(testFilePathBooks, "wb");
+	if (file) {
+		fwrite(books, sizeof(Book), bookCount, file);
+		fclose(file);
+	}
+
+	simulateUserInput("\n");
+
+	int result = mainMatrix(testFilePathBooks);
+
+	EXPECT_EQ(result, 0);
+}
+
+TEST_F(TryTest, DeleteBookTest_BookIdFoundTest) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	Book books[] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30}
+	};
+
+	int bookCount = sizeof(books) / sizeof(books[0]);
+
+	bool isFound = deleteBook(2, testFilePathBooks, books, bookCount);
+
+	EXPECT_TRUE(isFound);
+}
