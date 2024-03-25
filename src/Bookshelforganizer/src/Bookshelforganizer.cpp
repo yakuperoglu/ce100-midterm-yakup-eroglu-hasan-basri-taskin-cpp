@@ -1031,3 +1031,267 @@ int viewCatalog(const char* filePathBooks) {
 	free(books);
 	return 1;
 }
+/**
+ * @brief Displays the catalog of owned books without clearing the screen.
+ *
+ * This function displays the catalog of books owned by the current user without clearing the screen.
+ *
+ * @param filePathBooks The path to the file containing book information.
+ * @return Always returns 1.
+ */
+int viewCatalogForFunc(const char* filePathBooks) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadOwnedBooks(filePathBooks, &books, loggedUser.id);
+
+	if (bookCount <= 0) {
+		printf("No books owned.\n");
+	}
+	else {
+		for (int i = 0; i < bookCount; i++) {
+			printf("ID: %d, Title: %s, Author: %s, Genre: %s, Cost: %d\n",
+				books[i].id, books[i].title, books[i].author, books[i].genre, books[i].cost);
+		}
+	}
+
+	free(books);
+	return 1;
+}
+/**
+ * @brief Displays the menu for adding a new book.
+ *
+ * This function displays a menu for the user to input information about a new book to be added to the catalog.
+ * After entering the book details, it adds the book to the catalog file.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return 1 if the book is successfully added, 0 otherwise.
+ */
+int addBookMenu(const char* pathFileBooks) {
+	clearScreen();
+	Book newBook;
+
+	printf("Enter book name: ");
+	fgets(newBook.title, sizeof(newBook.title), stdin);
+	newBook.title[strcspn(newBook.title, "\n")] = 0;
+
+	printf("Enter author: ");
+	fgets(newBook.author, sizeof(newBook.author), stdin);
+	newBook.author[strcspn(newBook.author, "\n")] = 0;
+
+	printf("Enter Genre: ");
+	fgets(newBook.genre, sizeof(newBook.genre), stdin);
+	newBook.genre[strcspn(newBook.genre, "\n")] = 0;
+
+	printf("Enter Cost: ");
+	int cost = getInput();
+	if (cost < 0) {
+		printf("Invalid input for cost.\n");
+		enterToContinue();
+		return 0;
+	}
+	newBook.cost = cost;
+
+	newBook.owner = loggedUser;
+	newBook.isBorrowed = 0;
+	newBook.id = getNewBookId(pathFileBooks);
+
+	if (!addBook(&newBook, pathFileBooks)) { printf("Failed to add book.\n"); enterToContinue(); return 0; }
+
+	printf("Book added successfully.\n");
+	enterToContinue();
+	return 1;
+}
+/**
+ * @brief Displays the menu for deleting a book.
+ *
+ * This function displays a menu for the user to select a book to delete from the catalog.
+ * After selecting the book, it deletes the book from the catalog file.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return True if the book is successfully deleted, false otherwise.
+ */
+bool deleteBookMenu(const char* pathFileBooks) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+	if (bookCount == 0) { printf("No books available to delete.\n"); enterToContinue(); return false; }
+
+	viewCatalogForFunc(pathFileBooks);
+	printf("Enter the ID of the book to delete: ");
+	int bookId = getInput();
+
+	if (bookId < 0) { handleInputError(); enterToContinue(); return false; }
+
+	bool result = deleteBook(bookId, pathFileBooks, books, bookCount);
+	enterToContinue();
+	if (books != NULL) {
+		free(books);
+	}
+	return result;
+}
+/**
+ * @brief Displays the menu for updating a book.
+ *
+ * This function displays a menu for the user to select a book to update from the catalog.
+ * After selecting the book, it prompts the user to enter new details for the book and updates the information.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return True if the book information is successfully updated, false otherwise.
+ */
+bool updateBookMenu(const char* pathFileBooks) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+
+	if (bookCount <= 0) {
+		printf("No books available.\n");
+		enterToContinue();
+		return false;
+	}
+
+	viewCatalogForFunc(pathFileBooks);
+	printf("Enter the ID of the book to update: ");
+	int bookId = getInput();
+
+	if (bookId < 0) {
+		handleInputError();
+		enterToContinue();
+		return false;
+	}
+
+	char title[100], author[100], genre[100];
+	int cost;
+
+	printf("Enter the new name for the book: ");
+	fgets(title, sizeof(title), stdin); title[strcspn(title, "\n")] = 0;
+	printf("Enter author name: ");
+	fgets(author, sizeof(author), stdin); author[strcspn(author, "\n")] = 0;
+	printf("Enter genre: ");
+	fgets(genre, sizeof(genre), stdin); genre[strcspn(genre, "\n")] = 0;
+	printf("Enter Cost: ");
+	cost = getInput();
+
+	if (cost < 0) {
+		handleInputError();
+		enterToContinue();
+		return false;
+	}
+
+	bool updateResult = updateBook(books, bookCount, bookId, title, author, genre, cost, pathFileBooks);
+	if (updateResult) {
+		printf("Book with ID '%d' has been updated successfully.\n", bookId);
+	}
+	else {
+		printf("Failed to update book. No book found with ID '%d'.\n", bookId);
+	}
+
+	enterToContinue();
+	return updateResult;
+}
+/**
+ * @brief Displays the menu for selecting books within a budget.
+ *
+ * This function displays a menu for the user to enter a budget.
+ * It then selects books from the catalog file whose costs do not exceed the budget.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return 1 if books are successfully selected within the budget, 0 otherwise.
+ */
+int selectBooksByPriceMenu(const char* pathFileBooks) {
+	clearScreen();
+	int budget;
+
+	printf("Enter your budget: ");
+	budget = getInput();
+	if (budget < 0) {
+		printf("Invalid input for budget.\n");
+		enterToContinue();
+		return 0;
+	}
+
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+	if (bookCount <= 0) {
+		printf("No books found.\n");
+		enterToContinue();
+		return 0;
+	}
+
+	int** dp = (int**)malloc((bookCount + 1) * sizeof(int*));
+	for (int i = 0; i <= bookCount; i++) {
+		dp[i] = (int*)malloc((budget + 1) * sizeof(int));
+		memset(dp[i], 0, (budget + 1) * sizeof(int));
+	}
+
+	for (int i = 0; i <= bookCount; i++) {
+		for (int w = 0; w <= budget; w++) {
+			if (i == 0 || w == 0)
+				dp[i][w] = 0;
+			else if (books[i - 1].cost <= w)
+				dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - books[i - 1].cost] + 1);
+			else
+				dp[i][w] = dp[i - 1][w];
+		}
+	}
+
+	int w = budget;
+	printf("Selected Books within your budget:\n");
+	for (int i = bookCount; i > 0 && w > 0; i--) {
+		if (dp[i][w] != dp[i - 1][w]) {
+			printf("ID: %d, Title: %s, Author: %s, Genre: %s, Cost: %d\n",
+				books[i - 1].id, books[i - 1].title, books[i - 1].author, books[i - 1].genre, books[i - 1].cost);
+			w -= books[i - 1].cost;
+		}
+	}
+
+	for (int i = 0; i <= bookCount; i++) {
+		free(dp[i]);
+	}
+	free(dp);
+	free(books);
+	enterToContinue();
+	return 1;
+}
+/**
+ * @brief Calculates the minimum cost for multiplying all book costs matrices.
+ *
+ * This function calculates the minimum cost required for multiplying all book costs matrices using dynamic programming.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return 1 if the minimum cost is successfully calculated, 0 otherwise.
+ */
+int calculateBookCosts(const char* pathFileBooks) {
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+	if (bookCount <= 0) {
+		printf("No books found.\n");
+		return 0;
+	}
+
+	int* costs = (int*)malloc((bookCount + 1) * sizeof(int));
+	costs[0] = 0;
+	for (int i = 0; i < bookCount; i++) {
+		costs[i + 1] = books[i].cost;
+	}
+
+	int minCost = MatrixChainOrder(costs, bookCount + 1);
+	printf("Minimum cost for multiplying all book costs matrices is: %d\n", minCost);
+
+	free(costs);
+	free(books);
+	return 1;
+}
+
+/**
+ * @brief Displays the menu for calculating the minimum cost for multiplying all book costs matrices.
+ *
+ * This function displays a menu for the user to calculate the minimum cost required for multiplying all book costs matrices.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return Always returns 0.
+ */
+int calculateBookCostsMenu(const char* pathFileBooks) {
+	calculateBookCosts(pathFileBooks);
+	enterToContinue();
+	return 0;
+}
