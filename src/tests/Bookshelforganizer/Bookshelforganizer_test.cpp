@@ -838,3 +838,105 @@ TEST_F(TryTest, loginUserTest_FailedFileOpen) {
 	EXPECT_EQ(result, 0);
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, loginUserTest_UsersRegistered) {
+	simulateUserInput("\n\n\n");
+
+	User testUser = {};
+	int result = loginUser(testUser, testFilePathUsers);
+
+	resetStdinStdout();
+
+	EXPECT_EQ(result, 0);
+}
+
+TEST_F(TryTest, loginUserTest_NoUsersRegistered) {
+	FILE* emptyFile = fopen(testFilePathUsers, "wb");
+
+	simulateUserInput("\n\n\n");
+
+	fclose(emptyFile);
+
+	User testUser = {};
+
+	int result = loginUser(testUser, testFilePathUsers);
+
+	resetStdinStdout();
+
+	EXPECT_EQ(result, 0);
+}
+
+TEST_F(TryTest, registerUserMenuTest_UserRegistered) {
+
+	simulateUserInput("asd\nasd\nasd\nasd\n\n");
+
+	int result = registerUserMenu(testFilePathUsers);
+
+	resetStdinStdout();
+
+	EXPECT_EQ(result, 1);
+}
+
+TEST_F(TryTest, registerUserMenuTest_NoFile) {
+	testFilePathUsers = "non_existent_file6.bin";
+
+	simulateUserInput("asd\nasd\nasd\nasd\n\n");
+
+	int result = registerUserMenu(testFilePathUsers);
+
+	resetStdinStdout();
+
+	EXPECT_EQ(result, 1);
+}
+
+TEST_F(TryTest, viewWishlistCatalogForFuncTest_NoBook) {
+	testFilePathWishlist = "non_existent_file7.bin";
+
+	simulateUserInput("\n\n");
+
+	bool result = viewWishlistCatalogForFunc(testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, wishListTest_1) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n3\n\n\n6");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_10) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n4\n\n6");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_11) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n2\n1\n\n6");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_12) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n2\n7\n\n6");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
