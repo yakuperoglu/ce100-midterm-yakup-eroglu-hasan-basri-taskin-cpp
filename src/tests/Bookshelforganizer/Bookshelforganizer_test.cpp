@@ -940,3 +940,103 @@ TEST_F(TryTest, wishListTest_12) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, wishListTest_9) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n3\n1\n\n6");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_2) {
+	simulateUserInput("2\n1\n\n6\n\nasd\n\na\n6\n\nasd\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_3) {
+	simulateUserInput("3\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_4) {
+	simulateUserInput("4\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_5) {
+	simulateUserInput("5\nasd\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_6) {
+	simulateUserInput("asd\n\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_7) {
+	simulateUserInput("-23\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_8BinarySearch1) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n5\nasd\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_8BinarySearch2) {
+	simulateUserInput("1\nqwe\nqwe\nqwe\n23\n\n5\nasd\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, wishListTest_8BinarySearch3) {
+	simulateUserInput("1\nzxc\nzxc\nzxc\n23\n\n5\nzxc\n\n6\n");
+
+	bool result = wishList(testFilePathBooks, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
