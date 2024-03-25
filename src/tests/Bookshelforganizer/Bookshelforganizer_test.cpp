@@ -1514,3 +1514,125 @@ TEST_F(TryTest, BorrowBookMenuTest_BorrowBook_SuccessfulBorrow) {
 
 	remove(testBooksFile);
 }
+
+TEST_F(TryTest, BorrowBookMenuTest_BorrowBook_ErrorBorrow) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	Book testBook = { 1, "Test Book", "Test Author", "Test Genre", {1, "Owner Name", "", "", ""}, 1, 10 };
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	simulateUserInput("\nasd\n45\n\n");
+
+	int result = borrowBookMenu(testBooksFile, testHistoriesFile);
+
+	EXPECT_FALSE(result);
+
+	remove(testBooksFile);
+}
+
+TEST_F(TryTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	LoanedHistory testHistory;
+	testHistory.bookId = 1;
+	testHistory.debtorUserId = 1;
+	testHistory.hasGivenBack = 0;
+	testHistory.bookOwnerId = 1;
+
+	FILE* historyFile = fopen(testHistoriesFile, "wb");
+	fwrite(&testHistory, sizeof(LoanedHistory), 1, historyFile);
+	fclose(historyFile);
+
+	LoanedHistory* testHistories = NULL;
+	int historyCount = loadLoanedHistories(testHistoriesFile, &testHistories);
+
+	Book testBook;
+	testBook.id = 1;
+	testBook.isBorrowed = 1;
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	Book* testBooks = NULL;
+	int bookCount = loadBooks(testBooksFile, &testBooks);
+
+	simulateUserInput("\n\n\n");
+
+	bool result = giveBackBookMenu(testBooksFile, testHistoriesFile);
+	bool result2 = writeBorrowedBooksToConsole(testHistoriesFile);
+	bool result3 = writeGivenBooksToConsole(testHistoriesFile);
+
+	EXPECT_TRUE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn1) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	LoanedHistory testHistory;
+	testHistory.bookId = 1;
+	testHistory.debtorUserId = 1;
+	testHistory.hasGivenBack = 0;
+
+	FILE* historyFile = fopen(testHistoriesFile, "wb");
+	fwrite(&testHistory, sizeof(LoanedHistory), 1, historyFile);
+	fclose(historyFile);
+
+	LoanedHistory* testHistories = NULL;
+	int historyCount = loadLoanedHistories(testHistoriesFile, &testHistories);
+
+	Book testBook;
+	testBook.id = 1;
+	testBook.isBorrowed = 1;
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	Book* testBooks = NULL;
+	int bookCount = loadBooks(testBooksFile, &testBooks);
+
+	simulateUserInput("2\n1\n");
+
+	bool result = giveBackBookMenu(testBooksFile, testHistoriesFile);
+
+	EXPECT_TRUE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, SuggestBooksToBorrow_SuggestedBooksReturned_Correctly) {
+	const char* testBooksFile = "testBooks.bin";
+
+	Book testBooks[5];
+	for (int i = 0; i < 5; ++i) {
+		testBooks[i].id = i + 1;
+		snprintf(testBooks[i].title, sizeof(testBooks[i].title), "Test Book %d", i + 1);
+		snprintf(testBooks[i].author, sizeof(testBooks[i].author), "Test Author %d", i + 1);
+		snprintf(testBooks[i].genre, sizeof(testBooks[i].genre), "Test Genre %d", i + 1);
+		testBooks[i].isBorrowed = 0;
+		testBooks[i].owner.id = i + 1;
+		snprintf(testBooks[i].owner.name, sizeof(testBooks[i].owner.name), "Owner Name %d", i + 1);
+	}
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(testBooks, sizeof(Book), 5, bookFile);
+	fclose(bookFile);
+
+	simulateUserInput("\n\n\n\n");
+
+	bool suggestedCount = suggestBooksToBorrow(testBooksFile);
+
+	EXPECT_FALSE(suggestedCount);
+
+	remove(testBooksFile);
+}
