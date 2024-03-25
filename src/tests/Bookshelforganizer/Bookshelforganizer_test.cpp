@@ -1228,3 +1228,77 @@ TEST_F(TryTest, DeleteBookTest_BookIdFoundTest) {
 
 	EXPECT_TRUE(isFound);
 }
+
+TEST_F(TryTest, DeleteBookTest_BookDeletedSuccessfullyTest) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	Book books[] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30}
+	};
+
+	int bookCount = sizeof(books) / sizeof(books[0]);
+
+	bool isFound = deleteBook(2, testFilePathBooks, books, bookCount);
+
+	EXPECT_TRUE(isFound);
+}
+
+TEST_F(TryTest, viewCatalog_BooksExistTest) {
+
+	const char* testFilePathBooks = "test_books.txt";
+
+	Book books[] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30}
+	};
+	simulateUserInput("\n\n");
+
+	int bookCount = sizeof(books) / sizeof(books[0]);
+
+
+	int result = viewCatalog(testFilePathBooks);
+
+	EXPECT_EQ(result, 1);
+}
+
+TEST_F(TryTest, ViewCatalogForFuncTest_NoBooksOwnedTest) {
+	const char* testFilePathBooks = "testBooks.txt";
+
+	simulateUserInput("3\n7\n");
+
+	int result = viewCatalogForFunc(testFilePathBooks);
+
+	EXPECT_EQ(result, 1);
+}
+
+TEST_F(TryTest, ViewCatalogForFuncTest_BooksExistTest) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	Book books[] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30}
+	};
+
+	int bookCount = sizeof(books) / sizeof(books[0]);
+
+	simulateUserInput("3\n");
+
+	int result = viewCatalogForFunc(testFilePathBooks);
+
+	EXPECT_EQ(result, 1);
+}
+
+TEST_F(TryTest, DeleteBookMenuTest_DeleteBookSuccessTest) {
+	const char* testFilePathBooks = "test_books.txt";
+	const int testBookId = 1;
+
+	simulateUserInput("2\n7\n");
+
+	bool result = deleteBookMenu(testFilePathBooks);
+
+	EXPECT_FALSE(result);
+}
