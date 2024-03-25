@@ -1636,3 +1636,42 @@ TEST_F(TryTest, SuggestBooksToBorrow_SuggestedBooksReturned_Correctly) {
 
 	remove(testBooksFile);
 }
+
+TEST_F(TryTest, MinFunctionTest_ReturnsCorrectMinimumValue) {
+	int a = 5, b = 10;
+	int result1 = min(a, b);
+	EXPECT_EQ(result1, a) << "Expected " << a << " but got " << result1;
+}
+
+TEST_F(TryTest, minCostArrangingBooksTest) {
+	const char* testBooksFile = "testBooks.bin";
+
+	Book testBook;
+	testBook.id = 1;
+	testBook.isBorrowed = 1;
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	Book* testBooks = NULL;
+	int bookCount = loadBooks(testBooksFile, &testBooks);
+
+	simulateUserInput("2\n1\n");
+
+	bool result = minCostArrangingBooks(testBooksFile);
+
+	EXPECT_TRUE(result);
+
+	remove(testBooksFile);
+}
+
+int main(int argc, char** argv) {
+#ifdef ENABLE_TRY_TEST
+	::testing::InitGoogleTest(&argc, argv);
+	::testing::GTEST_FLAG(color) = "no";
+	return RUN_ALL_TESTS();
+#else
+	return 0;
+#endif
+}
