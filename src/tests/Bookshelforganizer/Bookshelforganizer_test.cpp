@@ -468,3 +468,43 @@ TEST_F(TryTest, bookCatalogingTest_1) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, bookCatalogingTest_2) {
+	simulateUserInput("2\n1\n\n8\n\n8\n\nasd\n8\n");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, bookCatalogingTest_3) {
+	simulateUserInput("3\n2\nasd\nasd\nasd\n23\n\n8\n");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, bookCatalogingTest_4) {
+	simulateUserInput("4\n\n8\n");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, bookCatalogingTest_5) {
+	simulateUserInput("5\n8\n\n8");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
