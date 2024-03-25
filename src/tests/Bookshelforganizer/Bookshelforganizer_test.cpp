@@ -1302,3 +1302,178 @@ TEST_F(TryTest, DeleteBookMenuTest_DeleteBookSuccessTest) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, UpdateBookMenuTest_InputErrorTest) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	simulateUserInput("-1\n\nasd\n");
+
+	bool result = updateBookMenu(testFilePathBooks);
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, UpdateBookMenuTest_UpdateSuccessfulTest) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	simulateUserInput("1\nasd\nqwe\nsdf\n50\n\nasd\n");
+
+	bool result = updateBookMenu(testFilePathBooks);
+
+
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, UpdateBookMenuTest_WrongPrice) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	simulateUserInput("1\nasd\nqwe\nsdf\n-1\n\nasd\n");
+
+	bool result = updateBookMenu(testFilePathBooks);
+
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, UpdateBookMenuTest_NoBookId) {
+	const char* testFilePathBooks = "test_books.txt";
+
+	simulateUserInput("25\nasd\nqwe\nsdf\n5\n\nasd\n");
+
+	bool result = updateBookMenu(testFilePathBooks);
+
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, BorrowBookTest_BorrowBook_SuccessfulBorrow) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	Book testBook = { 2, "Test Book", "Test Author", "Test Genre", {2, "Owner Name", "", "", ""}, 0, 10 };
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	User loggedUser = { 3, "Logged User", "", "", "" };
+
+
+	bool result = borrowBook(2, testBooksFile, testHistoriesFile);
+
+	EXPECT_TRUE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, BorrowBookTest_BorrowBook_BookNotFound) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fclose(bookFile);
+
+	bool result = borrowBook(1, testBooksFile, testHistoriesFile);
+
+	EXPECT_FALSE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, GiveBackBookTest_GiveBackBook_SuccessfulGiveBack) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	LoanedHistory testHistory;
+	testHistory.bookId = 1;
+	testHistory.debtorUserId = 1;
+	testHistory.hasGivenBack = 0;
+
+	FILE* historyFile = fopen(testHistoriesFile, "wb");
+	fwrite(&testHistory, sizeof(LoanedHistory), 1, historyFile);
+	fclose(historyFile);
+
+	Book testBook;
+	testBook.id = 1;
+	testBook.isBorrowed = 1;
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	bool result = giveBackBook(1, testBooksFile, testHistoriesFile);
+	EXPECT_FALSE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, GiveBackBookTest_GiveBackBook_BookNotBorrowedByUser) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	LoanedHistory testHistory;
+	testHistory.bookId = 1;
+	testHistory.debtorUserId = 2;
+	testHistory.hasGivenBack = 0;
+
+	FILE* historyFile = fopen(testHistoriesFile, "wb");
+	fwrite(&testHistory, sizeof(LoanedHistory), 1, historyFile);
+	fclose(historyFile);
+
+	Book testBook;
+	testBook.id = 1;
+	testBook.isBorrowed = 1;
+
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	bool result = giveBackBook(1, testBooksFile, testHistoriesFile);
+
+	EXPECT_FALSE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_NotSuccessfulBorrow) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	Book testBook = { 1, "Test Book", "Test Author", "Test Genre", {2, "Owner Name", "", "", ""}, 0, 10 };
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	simulateUserInput("\n\nasd\n2\n\n");
+
+
+	bool result = borrowBookMenu(testBooksFile, testHistoriesFile);
+
+	EXPECT_FALSE(result);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
+
+TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_SuccessfulBorrow) {
+	const char* testBooksFile = "testBooks.bin";
+	const char* testHistoriesFile = "testHistories.bin";
+
+	Book testBook = { 1, "Test Book", "Test Author", "Test Genre", {2, "Owner Name", "", "", ""}, 0, 10 };
+	FILE* bookFile = fopen(testBooksFile, "wb");
+	fwrite(&testBook, sizeof(Book), 1, bookFile);
+	fclose(bookFile);
+
+	simulateUserInput("1\n2\n1\n2\n1\n");
+
+
+	int result = borrowBookMenu(testBooksFile, testHistoriesFile);
+
+	EXPECT_EQ(result, 1);
+
+	remove(testBooksFile);
+	remove(testHistoriesFile);
+}
