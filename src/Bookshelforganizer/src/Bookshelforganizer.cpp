@@ -104,3 +104,118 @@ int printMainMenu() {
 	printf("Please enter a number to select: ");
 	return 1;
 }
+
+
+/**
+ * @brief Prints the user operations menu.
+ *
+ * This function prints the user operations menu, providing options for managing
+ * books, loans, and wishlists, and prompts the user to select an option by entering
+ * a corresponding number.
+ *
+ * @return Always returns 1.
+ */
+int userMenu() {
+	clearScreen();
+	printf("Welcome to User Operations\n\n");
+	printf("1. Book Cataloging\n");
+	printf("2. Loan Management\n");
+	printf("3. WishList Management\n");
+	printf("4. Return to Main Menu\n");
+	printf("Please enter a number to select: ");
+	return 1;
+}
+/**
+ * @brief Prints the book cataloging menu.
+ *
+ * This function prints the book cataloging menu, providing options for adding,
+ * deleting, updating, and viewing books in the catalog, and prompts the user to
+ * select an option by entering a corresponding number.
+ *
+ * @return Always returns 1.
+ */
+int bookCatalogingMenu() {
+	clearScreen();
+	printf("Welcome to Book Operations\n\n");
+	printf("1. Add Book\n");
+	printf("2. Delete Book\n");
+	printf("3. Update Book\n");
+	printf("4. View Catalog\n");
+	printf("5. View Books by Price\n");
+	printf("6. minCostArrangingBooks\n");
+	printf("7. Minimum cost of arranging books\n");
+	printf("8. Return User Operations\n");
+	printf("Please enter a number to select: ");
+	return 1;
+}
+
+/**
+ * @brief Prints the loan management menu.
+ *
+ * This function prints the loan management menu, providing options for giving and
+ * borrowing books, as well as showing borrowed and given books, and prompts the user
+ * to select an option by entering a corresponding number.
+ *
+ * @return Always returns 1.
+ */
+int loanManagementMenu() {
+	clearScreen();
+	printf("Loan Management Menu\n\n");
+	printf("1. Give Book\n");
+	printf("2. Borrow Book\n");
+	printf("3. Show borrowed books\n");
+	printf("4. Show given books\n");
+	printf("5. Show suggestions for books to borrow\n");
+	printf("6. Return to User Operations Menu\n");
+	printf("Please enter a number to select: ");
+	return 1;
+}
+
+/**
+ * @brief Prints the wishlist management menu.
+ *
+ * This function prints the wishlist management menu, providing options for adding,
+ * deleting, and marking books as acquired in the wishlist, as well as viewing and
+ * searching the wishlist, and prompts the user to select an option by entering a
+ * corresponding number.
+ *
+ * @return Always returns 1.
+ */
+int wishListMenu() {
+	clearScreen();
+	printf("WishList Management Menu\n\n");
+	printf("1. Add Book to Wishlist\n");
+	printf("2. Delete Book from Wishlist\n");
+	printf("3. Mark as Acquired\n");
+	printf("4. View Wishlist\n");
+	printf("5. Search Wishlist\n");
+	printf("6. Return to User Operations Menu\n");
+	printf("Please enter a number to select: ");
+	return 1;
+}
+
+//PRINTMENU
+
+
+//IDK
+/**
+ * @brief Gets a new unique user ID.
+ *
+ * This function determines a new unique user ID based on the existing user IDs
+ * in the provided array of users. If the user count is zero, it returns 1. Otherwise,
+ * it builds a max heap using the user IDs and returns the maximum ID incremented by 1.
+ *
+ * @param users An array of User structures containing existing user information.
+ * @param userCount The number of users in the array.
+ * @return A new unique user ID.
+ */
+int getNewUserId(User users[], int userCount) {
+	if (userCount == 0)
+		return 1;
+
+	buildMaxHeap(users, userCount);
+
+	int maxId = users[0].id;
+
+	return maxId + 1;
+}
