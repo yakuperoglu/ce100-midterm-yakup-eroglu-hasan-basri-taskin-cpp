@@ -771,3 +771,70 @@ TEST_F(TryTest, mainMenuTest_2) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, mainMenuTest_3) {
+	simulateUserInput("3\n");
+
+	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, userOperationsTest_WrongInput) {
+	simulateUserInput("35\nasd\nasd\nasd\n4\n4\n");
+
+	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, userOperationsTest_1) {
+	simulateUserInput("1\n7\n4\n");
+
+	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, userOperationsTest_2) {
+	simulateUserInput("2\n6\n4\n");
+
+	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, userOperationsTest_3) {
+	simulateUserInput("3\n6\n4\n");
+
+	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loginUserTest_FailedFileOpen) {
+	const char* nonExistingFilePath = "empty_file.bin";
+
+	User testUser;
+	strcpy(testUser.email, "test@example.com");
+	strcpy(testUser.password, "test123");
+
+	simulateUserInput("asd_input");
+
+	int result = loginUser(testUser, nonExistingFilePath);
+
+	resetStdinStdout();
+
+	EXPECT_EQ(result, 0);
+	EXPECT_FALSE(result);
+}
