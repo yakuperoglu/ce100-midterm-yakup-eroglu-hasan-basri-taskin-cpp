@@ -508,3 +508,72 @@ TEST_F(TryTest, bookCatalogingTest_5) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, bookCatalogingTest_6) {
+	simulateUserInput("6\n\n8\n\n8\n\nasd\n\n8\n");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, bookCatalogingTest_7) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n7\n\n8");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, updateBookTest_All) {
+
+	const int BookCount = 5;
+	Book books[BookCount] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Mike", "", "", ""}, 0, 40},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "Eve", "", "", ""}, 0, 50}
+	};
+	const int bookIdToUpdate = 3;
+	const char* updatedTitle = "Updated Book Title";
+	const char* updatedAuthor = "Updated Author";
+	const char* updatedGenre = "Updated Genre";
+	const int updatedCost = 100;
+	simulateUserInput("\n6\n\n6");
+
+	bool result = updateBook(books, BookCount, bookIdToUpdate, updatedTitle, updatedAuthor, updatedGenre, updatedCost, testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, addBookMenuTest_All) {
+	simulateUserInput("asd\nasd\nasd\n-3\n\n");
+
+	bool result = addBookMenu(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, deleteBookTest_IsfoundFalse) {
+	const char* pathFileBooks = "non_existent_file5.bin";
+	Book books[3] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30}
+	};
+	int bookCount = 3;
+
+	bool result = deleteBook(123, pathFileBooks, books, bookCount);
+
+	EXPECT_FALSE(result);
+}
