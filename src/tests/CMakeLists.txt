@@ -37,8 +37,8 @@ if(ENABLE_UTILITY)
 	add_subdirectory(utility)
 endif()
 
-# Calculator tests
-if(ENABLE_CALCULATOR)
-	add_subdirectory(calculator)
+# Bookshelforganizer tests
+if(ENABLE_BOOKSHELFORGANIZER)
+	add_subdirectory(bookshelforganizer)
 endif()
 
