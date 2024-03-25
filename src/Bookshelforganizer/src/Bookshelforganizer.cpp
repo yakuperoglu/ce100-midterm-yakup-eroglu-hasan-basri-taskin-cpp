@@ -505,3 +505,145 @@ int partition(Book arr[], int low, int high) {
 	swap(&arr[i + 1], &arr[high]);
 	return (i + 1);
 }
+/**
+ * @brief Chooses a random pivot and partitions the array of books.
+ *
+ * This function chooses a random pivot element from the array of books and partitions
+ * the array based on this pivot. It rearranges the elements of the array in such
+ * a way that all elements smaller than the pivot are placed before it, and all
+ * elements greater than or equal to the pivot are placed after it.
+ *
+ * @param arr The array of books to partition.
+ * @param low The index of the first element of the array.
+ * @param high The index of the last element of the array.
+ * @return The index of the pivot element after partitioning.
+ */
+int randomPartition(Book arr[], int low, int high) {
+	int n = high - low + 1;
+	int pivot = rand() % n;
+	swap(&arr[low + pivot], &arr[high]);
+	return partition(arr, low, high);
+}
+
+/**
+ * @brief Sorts an array of books using randomized quicksort.
+ *
+ * This function sorts an array of books using the randomized quicksort algorithm.
+ * It first partitions the array using a random pivot element and then recursively
+ * sorts the subarrays before and after the pivot.
+ *
+ * @param arr The array of books to sort.
+ * @param low The index of the first element of the array.
+ * @param high The index of the last element of the array.
+ * @return Always returns 1.
+ */
+int randomizedQuickSortBookIds(Book arr[], int low, int high) {
+	if (low < high) {
+		int pi = randomPartition(arr, low, high);
+		randomizedQuickSortBookIds(arr, low, pi - 1);
+		randomizedQuickSortBookIds(arr, pi + 1, high);
+	}
+	return 1;
+}
+//quick Sort
+
+//Longest Common Subsequence
+/**
+ * @brief Finds the Longest Common Subsequence (LCS) between two strings.
+ *
+ * This function calculates the length of the LCS between two strings using dynamic programming.
+ * It returns the ratio of the LCS length to the length of the shorter string.
+ *
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @return The ratio of the LCS length to the length of the shorter string.
+ */
+double findLCS(const char* s1, const char* s2) {
+	int m = strlen(s1);
+	int n = strlen(s2);
+
+	//Creating 2D array with dynamic memory allocation bc c++ does not support array resizing with non-constant values.
+	int** L = (int**)malloc((m + 1) * sizeof(int*));
+	for (int i = 0; i <= m; i++) {
+		L[i] = (int*)malloc((n + 1) * sizeof(int));
+	}
+
+	for (int i = 0; i <= m; i++) {
+		for (int j = 0; j <= n; j++) {
+			if (i == 0 || j == 0)
+				L[i][j] = 0;
+			else if (s1[i - 1] == s2[j - 1])
+				L[i][j] = L[i - 1][j - 1] + 1;
+			else
+				L[i][j] = (L[i - 1][j] > L[i][j - 1]) ? L[i - 1][j] : L[i][j - 1];
+		}
+	}
+
+	int len = L[m][n];
+
+	for (int i = 0; i <= m; i++) {
+		free(L[i]);
+	}
+	free(L);
+
+	return len / (double)(m < n ? m : n);
+}
+//Longest Common Subsequence
+
+//Heap Sort
+/**
+ * @brief Heapifies the array of users.
+ *
+ * This function heapifies the array of users based on their IDs.
+ *
+ * @param users The array of users to be heapified.
+ * @param n The number of users in the array.
+ * @param i The index of the current element being heapified.
+ */
+void heapify(User users[], int n, int i) {
+	int largest = i;
+	int left = 2 * i + 1;
+	int right = 2 * i + 2;
+
+	if (left < n && users[left].id > users[largest].id)
+		largest = left;
+
+	if (right < n && users[right].id > users[largest].id)
+		largest = right;
+
+	if (largest != i) {
+		User swap = users[i];
+		users[i] = users[largest];
+		users[largest] = swap;
+
+		heapify(users, n, largest);
+	}
+}
+/**
+ * @brief Builds a max heap from the array of users.
+ *
+ * This function builds a max heap from the array of users based on their IDs.
+ *
+ * @param users The array of users to build the max heap from.
+ * @param n The number of users in the array.
+ */
+void buildMaxHeap(User users[], int n) {
+	for (int i = n / 2 - 1; i >= 0; i--)
+		heapify(users, n, i);
+}
+//heap Sort
+
+//Knapsack Implementation with Dynamic Programming
+/**
+ * @brief Finds the maximum of two integers.
+ *
+ * This function returns the maximum of two integers.
+ *
+ * @param a The first integer.
+ * @param b The second integer.
+ * @return The maximum of the two integers.
+ */
+int max(int a, int b) {
+	return (a > b) ? a : b;
+}
+//Knapsack Implementation with Dynamic Programming
