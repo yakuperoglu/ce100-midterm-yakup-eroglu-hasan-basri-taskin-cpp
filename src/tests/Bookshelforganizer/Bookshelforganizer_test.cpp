@@ -119,3 +119,23 @@ TEST_F(TryTest, getInputTest_EmptyInput) {
 	int result = getInput();
 	EXPECT_EQ(-1, result);
 }
+
+TEST_F(TryTest, printMainMenuTest) {
+	bool result = printMainMenu();
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, userMenuTest) {
+	bool result = userMenu();
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, bookCatalogingMenuTest) {
+	bool result = bookCatalogingMenu();
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, loanManagementMenuTest) {
+	bool result = loanManagementMenu();
+	EXPECT_TRUE(result);
+}
