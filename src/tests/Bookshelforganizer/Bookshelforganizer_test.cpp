@@ -81,3 +81,23 @@ const char* testFilePathUsers = "testUsers.bin";
 const char* testFilePathBooks = "testBooks.bin";
 const char* testFilePathLendingHistories = "testHistories.bin";
 const char* testFilePathWishlist = "testWishlist.bin";
+
+TEST_F(TryTest, enterToContinueTest) {
+	simulateUserInput("\n");
+
+	bool result = enterToContinue();
+
+	resetStdinStdout();
+
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, handleInputErrorTest) {
+	simulateUserInput("asd\n");
+
+	bool result = handleInputError();
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
