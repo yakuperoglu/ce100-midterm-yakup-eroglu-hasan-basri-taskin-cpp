@@ -230,3 +230,184 @@ TEST_F(TryTest, getNewWishlistIdTest) {
 
 	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
 }
+
+TEST_F(TryTest, getNewWishlistIdTest_NoBook) {
+	const char* pathFileWishlist = "testWishlistNoBook.bin";
+
+	FILE* file = fopen(pathFileWishlist, "wb");
+	if (file) {
+
+	}
+
+	int newWishlistId = getNewWishlistId(pathFileWishlist);
+
+	int expectedNewWishlistId = 1;
+
+	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
+}
+
+TEST_F(TryTest, getNewWishlistIdTest_NoFile) {
+	const char* pathFileWishlist = "non_existent_file.bin";
+
+	int newWishlistId = getNewWishlistId(pathFileWishlist);
+
+	int expectedNewWishlistId = 1;
+
+	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
+}
+
+TEST_F(TryTest, loadOwnedBooksTest_ValidFile_ValidUserId) {
+	const char* pathFileBooks = "testBooks.bin";
+	const int userId = 1;
+
+	FILE* file = fopen(pathFileBooks, "wb");
+	if (file) {
+		Book books[] = {
+			{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+			{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+			{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+			{4, "Book 4", "Author 4", "Genre 4", {1, "John", "", "", ""}, 0, 10}
+		};
+		int bookCount = sizeof(books) / sizeof(books[0]);
+		fwrite(books, sizeof(Book), bookCount, file);
+		fclose(file);
+	}
+
+	Book* loadedBooks = NULL;
+	int bookCount = loadOwnedBooks(pathFileBooks, &loadedBooks, userId);
+
+	EXPECT_EQ(2, bookCount);
+
+	EXPECT_STREQ("Book 1", loadedBooks[0].title);
+	EXPECT_STREQ("Book 4", loadedBooks[1].title);
+
+	free(loadedBooks);
+}
+
+TEST_F(TryTest, loadOwnedBooksTest_InvalidFile) {
+	const char* pathFileBooks = "non_existent_file1.bin";
+	const int userId = 1;
+
+	Book* loadedBooks = NULL;
+	int bookCount = loadOwnedBooks(pathFileBooks, &loadedBooks, userId);
+
+	EXPECT_EQ(-1, bookCount);
+	EXPECT_EQ(nullptr, loadedBooks);
+}
+
+TEST_F(TryTest, loadUsersTest_ValidFile) {
+	const char* pathFileUsers = "testUsers.bin";
+
+	FILE* file = fopen(pathFileUsers, "wb");
+	if (file) {
+		User users[] = {
+			{1, "John","dam","asd", "asd"},
+			{2, "Alice","aer","segc","asd"},
+			{3, "Bob","asedf","dfgh","dth"}
+		};
+		int userCount = sizeof(users) / sizeof(users[0]);
+		fwrite(&userCount, sizeof(int), 1, file);
+		fwrite(users, sizeof(User), userCount, file);
+		fclose(file);
+	}
+
+	User* loadedUsers = NULL;
+	int userCount = loadUsers(pathFileUsers, &loadedUsers);
+
+	EXPECT_EQ(3, userCount);
+
+	EXPECT_STREQ("John", loadedUsers[0].name);
+	EXPECT_STREQ("Alice", loadedUsers[1].name);
+	EXPECT_STREQ("Bob", loadedUsers[2].name);
+
+	free(loadedUsers);
+}
+
+TEST_F(TryTest, loadUsersTest_InvalidFile) {
+	const char* pathFileUsers = "testNoUsers.bin";
+
+	User* loadedUsers = NULL;
+	int userCount = loadUsers(pathFileUsers, &loadedUsers);
+
+	EXPECT_EQ(0, userCount);
+	EXPECT_EQ(nullptr, loadedUsers);
+}
+
+TEST_F(TryTest, loadBooksTest) {
+	FILE* file = fopen(testFilePathBooks, "wb");
+	if (file) {
+		int bookCount = 3;
+		Book books[] = {
+			{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+			{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+			{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+			{4, "Book 4", "Author 4", "Genre 4", {4, "John", "", "", ""}, 0, 10}
+		};
+		fwrite(books, sizeof(Book), bookCount, file);
+
+		fclose(file);
+	}
+
+	Book* loadedBooks = NULL;
+	int bookCount = loadBooks(testFilePathBooks, &loadedBooks);
+
+	int expectedBookCount = 3;
+	const char* expectedTitle = "Book 1";
+
+	EXPECT_EQ(expectedBookCount, bookCount);
+	EXPECT_STREQ(expectedTitle, loadedBooks[0].title);
+
+	free(loadedBooks);
+}
+
+TEST_F(TryTest, loadBooksForUserTest_ValidFile_ValidUserId) {
+	const char* pathFileBooks = "testBooksForUser.bin";
+	int userId = 1;
+
+	FILE* file = fopen(pathFileBooks, "wb");
+	if (file) {
+		Book books[] = {
+			{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+			{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+			{3, "Book 3", "Author 3", "Genre 3", {1, "John", "", "", ""}, 0, 30},
+			{4, "Book 4", "Author 4", "Genre 4", {3, "Bob", "", "", ""}, 0, 40}
+		};
+		fwrite(books, sizeof(Book), sizeof(books) / sizeof(books[0]), file);
+		fclose(file);
+	}
+
+	Book* filteredBooks = NULL;
+	int bookCount = loadBooksForUser(pathFileBooks, userId, &filteredBooks);
+
+	EXPECT_EQ(2, bookCount);
+	EXPECT_STREQ("Book 1", filteredBooks[0].title);
+	EXPECT_STREQ("Book 3", filteredBooks[1].title);
+
+	free(filteredBooks);
+}
+
+TEST_F(TryTest, loadBooksForUserTest_InvalidFile) {
+	const char* pathFileBooks = ("non_existent_file2.bin");;
+	int userId = 1;
+
+	Book* filteredBooks = NULL;
+	int bookCount = loadBooksForUser(pathFileBooks, userId, &filteredBooks);
+
+	EXPECT_EQ(-1, bookCount);
+	EXPECT_EQ(nullptr, filteredBooks);
+}
+
+TEST_F(TryTest, loadLoanedHistoriesTest_EmptyFile) {
+	const char* pathFileHistories = "empty_file.bin";
+
+	FILE* file = fopen(pathFileHistories, "wb");
+	if (file) {
+		fclose(file);
+	}
+
+	LoanedHistory* loadedHistories = NULL;
+	int historyCount = loadLoanedHistories(pathFileHistories, &loadedHistories);
+
+	EXPECT_EQ(0, historyCount);
+	EXPECT_EQ(nullptr, loadedHistories);
+}
