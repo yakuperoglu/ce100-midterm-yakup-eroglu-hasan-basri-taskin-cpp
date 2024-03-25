@@ -1513,3 +1513,92 @@ int borrowBookMenu(const char* pathFileBooks, const char* pathFileHistories) {
 	free(books);
 	return 1;
 }
+
+/**
+ * @brief Displays the menu for giving back a borrowed book.
+ *
+ * This function displays a menu for the user to select a borrowed book to return.
+ * It then marks the selected book as returned in the loan history and updates the book status.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return 1 if the book is successfully returned, 0 otherwise.
+ */
+int giveBackBookMenu(const char* pathFileBooks, const char* pathFileHistories) {
+	clearScreen();
+	printf("Books You Have Borrowed:\n");
+
+	LoanedHistory* histories = NULL;
+	int historyCount = loadLoanedHistories(pathFileHistories, &histories);
+
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+
+	int borrowedBooksDisplayed = 0;
+	for (int i = 0; i < historyCount; i++) {
+		if (histories[i].debtorUserId == loggedUser.id && histories[i].hasGivenBack == 0) {
+			for (int j = 0; j < bookCount; j++) {
+				if (books[j].id == histories[i].bookId) {
+					printf("ID: %d Title: %s Author: %s Genre: %s\n", books[j].id, books[j].title, books[j].author, books[j].genre);
+					borrowedBooksDisplayed++;
+					break;
+				}
+			}
+		}
+	}
+
+	if (borrowedBooksDisplayed == 0) {
+		printf("You have not borrowed any books.\n");
+	}
+	else {
+		printf("\nEnter the ID of the Book to Return: ");
+		int bookId = getInput();
+
+		if (bookId < 0) {
+			handleInputError();
+			free(histories);
+			free(books);
+			enterToContinue();
+			return 0;
+		}
+
+		if (!giveBackBook(bookId, pathFileBooks, pathFileHistories)) {
+			printf("An error occurred while returning the book.\n");
+		}
+		else { printf("The book has been successfully returned.\n"); }
+	}
+
+	free(histories);
+	free(books);
+	enterToContinue();
+	return 1;
+}
+
+/**
+ * @brief Displays the borrowed books of the current user.
+ *
+ * This function displays the borrowed books of the current user by reading loan histories.
+ *
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return Always returns 1.
+ */
+int viewBorrowedBooks(const char* pathFileHistories) {
+	clearScreen();
+	writeBorrowedBooksToConsole(pathFileHistories);
+	enterToContinue();
+	return 1;
+}
+/**
+ * @brief Displays the books given by the user to others.
+ *
+ * This function displays the books given by the user to others by reading loan histories.
+ *
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return Always returns 1.
+ */
+int viewGivenBooks(const char* pathFileHistories) {
+	clearScreen();
+	writeGivenBooksToConsole(pathFileHistories);
+	enterToContinue();
+	return 1;
+}
