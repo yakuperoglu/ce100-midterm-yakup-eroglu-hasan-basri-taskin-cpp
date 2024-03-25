@@ -170,3 +170,30 @@ TEST_F(TryTest, getNewUserIdTest_NoUser) {
 
 	EXPECT_EQ(expectedNewUserId, newUserId);
 }
+
+TEST_F(TryTest, getNewBookIdTest) {
+	const char* pathFileBooks = "testBooks.bin";
+
+	FILE* file = fopen(pathFileBooks, "wb");
+	if (file) {
+		Book book = { 1, "Book Title 1", "Author 1", "asd" , 0 , 0 , 0 };
+		fwrite(&book, sizeof(Book), 1, file);
+		fclose(file);
+	}
+
+	int newBookId = getNewBookId(pathFileBooks);
+
+	int expectedNewBookId = 2;
+
+	EXPECT_EQ(expectedNewBookId, newBookId);
+}
+
+TEST_F(TryTest, getNewBookIdTest_NoBook) {
+	const char* pathFileBooks = "testNoBooks.bin";
+
+	int newBookId = getNewBookId(pathFileBooks);
+
+	int expectedNewBookId = 1;
+
+	EXPECT_EQ(expectedNewBookId, newBookId);
+}
