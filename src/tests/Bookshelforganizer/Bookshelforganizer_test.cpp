@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "../../try/header/try.h"  
+#include "../../Bookshelforganizer/header/Bookshelforganizer.h"  
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -82,7 +82,7 @@ const char* testFilePathBooks = "testBooks.bin";
 const char* testFilePathLendingHistories = "testHistories.bin";
 const char* testFilePathWishlist = "testWishlist.bin";
 
-TEST_F(TryTest, enterToContinueTest) {
+TEST_F(BookshelforganizerTest, enterToContinueTest) {
 	simulateUserInput("\n");
 
 	bool result = enterToContinue();
@@ -92,7 +92,7 @@ TEST_F(TryTest, enterToContinueTest) {
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, handleInputErrorTest) {
+TEST_F(BookshelforganizerTest, handleInputErrorTest) {
 	simulateUserInput("asd\n");
 
 	bool result = handleInputError();
@@ -102,50 +102,50 @@ TEST_F(TryTest, handleInputErrorTest) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, getInputTest) {
+TEST_F(BookshelforganizerTest, getInputTest) {
 	simulateUserInput("5\n");
 	int result = getInput();
 	EXPECT_EQ(5, result);
 }
 
-TEST_F(TryTest, getInputTest_WrongInput) {
+TEST_F(BookshelforganizerTest, getInputTest_WrongInput) {
 	simulateUserInput("asd\n");
 	int result = getInput();
 	EXPECT_EQ(-2, result);
 }
 
-TEST_F(TryTest, getInputTest_EmptyInput) {
+TEST_F(BookshelforganizerTest, getInputTest_EmptyInput) {
 	simulateUserInput("");
 	int result = getInput();
 	EXPECT_EQ(-1, result);
 }
 
-TEST_F(TryTest, printMainMenuTest) {
+TEST_F(BookshelforganizerTest, printMainMenuTest) {
 	bool result = printMainMenu();
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, userMenuTest) {
+TEST_F(BookshelforganizerTest, userMenuTest) {
 	bool result = userMenu();
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, bookCatalogingMenuTest) {
+TEST_F(BookshelforganizerTest, bookCatalogingMenuTest) {
 	bool result = bookCatalogingMenu();
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, loanManagementMenuTest) {
+TEST_F(BookshelforganizerTest, loanManagementMenuTest) {
 	bool result = loanManagementMenu();
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, wishListMenuTest) {
+TEST_F(BookshelforganizerTest, wishListMenuTest) {
 	bool result = wishListMenu();
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, getNewUserIdTest) {
+TEST_F(BookshelforganizerTest, getNewUserIdTest) {
 	const int userCount = 3;
 	User users[userCount] = {
 		{1, "John", "Doe", "john@example.com", "john123"},
@@ -160,7 +160,7 @@ TEST_F(TryTest, getNewUserIdTest) {
 	EXPECT_EQ(expectedNewUserId, newUserId);
 }
 
-TEST_F(TryTest, getNewUserIdTest_NoUser) {
+TEST_F(BookshelforganizerTest, getNewUserIdTest_NoUser) {
 	const int userCount = 0;
 	User users[1];
 
@@ -171,7 +171,7 @@ TEST_F(TryTest, getNewUserIdTest_NoUser) {
 	EXPECT_EQ(expectedNewUserId, newUserId);
 }
 
-TEST_F(TryTest, getNewBookIdTest) {
+TEST_F(BookshelforganizerTest, getNewBookIdTest) {
 	const char* pathFileBooks = "testBooks.bin";
 
 	FILE* file = fopen(pathFileBooks, "wb");
@@ -188,7 +188,7 @@ TEST_F(TryTest, getNewBookIdTest) {
 	EXPECT_EQ(expectedNewBookId, newBookId);
 }
 
-TEST_F(TryTest, getNewBookIdTest_NoBook) {
+TEST_F(BookshelforganizerTest, getNewBookIdTest_NoBook) {
 	const char* pathFileBooks = "testNoBooks.bin";
 
 	int newBookId = getNewBookId(pathFileBooks);
@@ -198,7 +198,7 @@ TEST_F(TryTest, getNewBookIdTest_NoBook) {
 	EXPECT_EQ(expectedNewBookId, newBookId);
 }
 
-TEST_F(TryTest, saveBooksTest) {
+TEST_F(BookshelforganizerTest, saveBooksTest) {
 	const char* path = "testBooks.bin";
 
 	Book books[3] = {
@@ -214,7 +214,7 @@ TEST_F(TryTest, saveBooksTest) {
 	EXPECT_EQ(expectedSaveResult, saveResult);
 }
 
-TEST_F(TryTest, getNewWishlistIdTest) {
+TEST_F(BookshelforganizerTest, getNewWishlistIdTest) {
 	const char* pathFileWishlist = "testWishlist.bin";
 
 	FILE* file = fopen(pathFileWishlist, "wb");
@@ -231,7 +231,7 @@ TEST_F(TryTest, getNewWishlistIdTest) {
 	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
 }
 
-TEST_F(TryTest, getNewWishlistIdTest_NoBook) {
+TEST_F(BookshelforganizerTest, getNewWishlistIdTest_NoBook) {
 	const char* pathFileWishlist = "testWishlistNoBook.bin";
 
 	FILE* file = fopen(pathFileWishlist, "wb");
@@ -246,7 +246,7 @@ TEST_F(TryTest, getNewWishlistIdTest_NoBook) {
 	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
 }
 
-TEST_F(TryTest, getNewWishlistIdTest_NoFile) {
+TEST_F(BookshelforganizerTest, getNewWishlistIdTest_NoFile) {
 	const char* pathFileWishlist = "non_existent_file.bin";
 
 	int newWishlistId = getNewWishlistId(pathFileWishlist);
@@ -256,7 +256,7 @@ TEST_F(TryTest, getNewWishlistIdTest_NoFile) {
 	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
 }
 
-TEST_F(TryTest, loadOwnedBooksTest_ValidFile_ValidUserId) {
+TEST_F(BookshelforganizerTest, loadOwnedBooksTest_ValidFile_ValidUserId) {
 	const char* pathFileBooks = "testBooks.bin";
 	const int userId = 1;
 
@@ -284,7 +284,7 @@ TEST_F(TryTest, loadOwnedBooksTest_ValidFile_ValidUserId) {
 	free(loadedBooks);
 }
 
-TEST_F(TryTest, loadOwnedBooksTest_InvalidFile) {
+TEST_F(BookshelforganizerTest, loadOwnedBooksTest_InvalidFile) {
 	const char* pathFileBooks = "non_existent_file1.bin";
 	const int userId = 1;
 
@@ -295,7 +295,7 @@ TEST_F(TryTest, loadOwnedBooksTest_InvalidFile) {
 	EXPECT_EQ(nullptr, loadedBooks);
 }
 
-TEST_F(TryTest, loadUsersTest_ValidFile) {
+TEST_F(BookshelforganizerTest, loadUsersTest_ValidFile) {
 	const char* pathFileUsers = "testUsers.bin";
 
 	FILE* file = fopen(pathFileUsers, "wb");
@@ -323,7 +323,7 @@ TEST_F(TryTest, loadUsersTest_ValidFile) {
 	free(loadedUsers);
 }
 
-TEST_F(TryTest, loadUsersTest_InvalidFile) {
+TEST_F(BookshelforganizerTest, loadUsersTest_InvalidFile) {
 	const char* pathFileUsers = "testNoUsers.bin";
 
 	User* loadedUsers = NULL;
@@ -333,7 +333,7 @@ TEST_F(TryTest, loadUsersTest_InvalidFile) {
 	EXPECT_EQ(nullptr, loadedUsers);
 }
 
-TEST_F(TryTest, loadBooksTest) {
+TEST_F(BookshelforganizerTest, loadBooksTest) {
 	FILE* file = fopen(testFilePathBooks, "wb");
 	if (file) {
 		int bookCount = 3;
@@ -360,7 +360,7 @@ TEST_F(TryTest, loadBooksTest) {
 	free(loadedBooks);
 }
 
-TEST_F(TryTest, loadBooksForUserTest_ValidFile_ValidUserId) {
+TEST_F(BookshelforganizerTest, loadBooksForUserTest_ValidFile_ValidUserId) {
 	const char* pathFileBooks = "testBooksForUser.bin";
 	int userId = 1;
 
@@ -386,7 +386,7 @@ TEST_F(TryTest, loadBooksForUserTest_ValidFile_ValidUserId) {
 	free(filteredBooks);
 }
 
-TEST_F(TryTest, loadBooksForUserTest_InvalidFile) {
+TEST_F(BookshelforganizerTest, loadBooksForUserTest_InvalidFile) {
 	const char* pathFileBooks = ("non_existent_file2.bin");;
 	int userId = 1;
 
@@ -397,7 +397,7 @@ TEST_F(TryTest, loadBooksForUserTest_InvalidFile) {
 	EXPECT_EQ(nullptr, filteredBooks);
 }
 
-TEST_F(TryTest, loadLoanedHistoriesTest_EmptyFile) {
+TEST_F(BookshelforganizerTest, loadLoanedHistoriesTest_EmptyFile) {
 	const char* pathFileHistories = "empty_file.bin";
 
 	FILE* file = fopen(pathFileHistories, "wb");
@@ -412,7 +412,7 @@ TEST_F(TryTest, loadLoanedHistoriesTest_EmptyFile) {
 	EXPECT_EQ(nullptr, loadedHistories);
 }
 
-TEST_F(TryTest, loadLoanedHistoriesTest_NonEmptyFile) {
+TEST_F(BookshelforganizerTest, loadLoanedHistoriesTest_NonEmptyFile) {
 	const char* pathFileHistories = "non_empty_file.bin";
 
 	FILE* file = fopen(pathFileHistories, "wb");
@@ -434,7 +434,7 @@ TEST_F(TryTest, loadLoanedHistoriesTest_NonEmptyFile) {
 	free(loadedHistories);
 }
 
-TEST_F(TryTest, loadLoanedHistoriesTest_InvalidFile) {
+TEST_F(BookshelforganizerTest, loadLoanedHistoriesTest_InvalidFile) {
 	const char* pathFileHistories = "non_existent_file3.bin";
 
 	LoanedHistory* loadedHistories = NULL;
@@ -444,7 +444,7 @@ TEST_F(TryTest, loadLoanedHistoriesTest_InvalidFile) {
 	EXPECT_EQ(nullptr, loadedHistories);
 }
 
-TEST_F(TryTest, saveLoanedHistoriesTest_FileOpened) {
+TEST_F(BookshelforganizerTest, saveLoanedHistoriesTest_FileOpened) {
 	const char* pathFileHistories = "testHistories.bin";
 
 	int result = saveLoanedHistories(pathFileHistories, nullptr, 0);
@@ -458,7 +458,7 @@ TEST_F(TryTest, saveLoanedHistoriesTest_FileOpened) {
 	remove(pathFileHistories);
 }
 
-TEST_F(TryTest, bookCatalogingTest_1) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_1) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n8\n");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -469,7 +469,7 @@ TEST_F(TryTest, bookCatalogingTest_1) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, bookCatalogingTest_2) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_2) {
 	simulateUserInput("2\n1\n\n8\n\n8\n\nasd\n8\n");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -479,7 +479,7 @@ TEST_F(TryTest, bookCatalogingTest_2) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, bookCatalogingTest_3) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_3) {
 	simulateUserInput("3\n2\nasd\nasd\nasd\n23\n\n8\n");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -489,7 +489,7 @@ TEST_F(TryTest, bookCatalogingTest_3) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, bookCatalogingTest_4) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_4) {
 	simulateUserInput("4\n\n8\n");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -499,7 +499,7 @@ TEST_F(TryTest, bookCatalogingTest_4) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, bookCatalogingTest_5) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_5) {
 	simulateUserInput("5\n8\n\n8");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -509,7 +509,7 @@ TEST_F(TryTest, bookCatalogingTest_5) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, bookCatalogingTest_6) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_6) {
 	simulateUserInput("6\n\n8\n\n8\n\nasd\n\n8\n");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -519,7 +519,7 @@ TEST_F(TryTest, bookCatalogingTest_6) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, bookCatalogingTest_7) {
+TEST_F(BookshelforganizerTest, bookCatalogingTest_7) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n7\n\n8");
 
 	bool result = bookCataloging(testFilePathBooks);
@@ -530,7 +530,7 @@ TEST_F(TryTest, bookCatalogingTest_7) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, updateBookTest_All) {
+TEST_F(BookshelforganizerTest, updateBookTest_All) {
 
 	const int BookCount = 5;
 	Book books[BookCount] = {
@@ -554,7 +554,7 @@ TEST_F(TryTest, updateBookTest_All) {
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, addBookMenuTest_All) {
+TEST_F(BookshelforganizerTest, addBookMenuTest_All) {
 	simulateUserInput("asd\nasd\nasd\n-3\n\n");
 
 	bool result = addBookMenu(testFilePathBooks);
@@ -564,7 +564,7 @@ TEST_F(TryTest, addBookMenuTest_All) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, deleteBookTest_IsfoundFalse) {
+TEST_F(BookshelforganizerTest, deleteBookTest_IsfoundFalse) {
 	const char* pathFileBooks = "non_existent_file5.bin";
 	Book books[3] = {
 		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
@@ -578,7 +578,7 @@ TEST_F(TryTest, deleteBookTest_IsfoundFalse) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, updateBookTest_NotFound) {
+TEST_F(BookshelforganizerTest, updateBookTest_NotFound) {
 	const char* pathFileBooks = "testBooks.bin";
 	Book books[3] = {
 		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
@@ -592,7 +592,7 @@ TEST_F(TryTest, updateBookTest_NotFound) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, deleteBookMenuTest_InvalidBookId) {
+TEST_F(BookshelforganizerTest, deleteBookMenuTest_InvalidBookId) {
 	const char* pathFileBooks = "test_books.bin";
 
 	simulateUserInput("-1\n6asd\n\n");
@@ -604,7 +604,7 @@ TEST_F(TryTest, deleteBookMenuTest_InvalidBookId) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, updateBookMenuTest_noBookId) {
+TEST_F(BookshelforganizerTest, updateBookMenuTest_noBookId) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	simulateUserInput("-1\n6asd\n\n");
@@ -616,7 +616,7 @@ TEST_F(TryTest, updateBookMenuTest_noBookId) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, updateBookMenuTest_yesCost) {
+TEST_F(BookshelforganizerTest, updateBookMenuTest_yesCost) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	simulateUserInput("2\nasd\nasd\nasd\n6\nasd\n");
@@ -628,7 +628,7 @@ TEST_F(TryTest, updateBookMenuTest_yesCost) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, updateBookMenuTest_noCost) {
+TEST_F(BookshelforganizerTest, updateBookMenuTest_noCost) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	simulateUserInput("2\nasd\nasd\nasd\n-1\n\n6\n");
@@ -640,7 +640,7 @@ TEST_F(TryTest, updateBookMenuTest_noCost) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, updateBookMenuTest_wrongId) {
+TEST_F(BookshelforganizerTest, updateBookMenuTest_wrongId) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	simulateUserInput("43\nasd\nasd\nasd\n13\n\n6\n");
@@ -652,7 +652,7 @@ TEST_F(TryTest, updateBookMenuTest_wrongId) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, selectBooksByPriceMenuTest_All) {
+TEST_F(BookshelforganizerTest, selectBooksByPriceMenuTest_All) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	Book books[5] = {
@@ -674,7 +674,7 @@ TEST_F(TryTest, selectBooksByPriceMenuTest_All) {
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, selectBooksByPriceMenuTest_budgetNoMoney) {
+TEST_F(BookshelforganizerTest, selectBooksByPriceMenuTest_budgetNoMoney) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	Book books[5] = {
@@ -696,7 +696,7 @@ TEST_F(TryTest, selectBooksByPriceMenuTest_budgetNoMoney) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, calculateBookCostsTest_BooksFound) {
+TEST_F(BookshelforganizerTest, calculateBookCostsTest_BooksFound) {
 	const char* pathFileBooks = "testbooks.bin";
 
 	Book books[5] = {
@@ -718,7 +718,7 @@ TEST_F(TryTest, calculateBookCostsTest_BooksFound) {
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, calculateBookCostsTest_BooksNotFound) {
+TEST_F(BookshelforganizerTest, calculateBookCostsTest_BooksNotFound) {
 	const char* pathFileBooks = "testNoBooks.bin";
 
 	simulateUserInput("-3\nasd\nasd\nasd\n13\n\n6\n");
@@ -730,7 +730,7 @@ TEST_F(TryTest, calculateBookCostsTest_BooksNotFound) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, CalculateBookCostsMenuTest_CheckFunctionality) {
+TEST_F(BookshelforganizerTest, CalculateBookCostsMenuTest_CheckFunctionality) {
 	const char* pathFileBooks = "testBooks.bin";
 
 	simulateUserInput("-3\nasd\nasd\nasd\n13\n\n6\n");
@@ -742,7 +742,7 @@ TEST_F(TryTest, CalculateBookCostsMenuTest_CheckFunctionality) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, mainMenuTest_WrongInput) {
+TEST_F(BookshelforganizerTest, mainMenuTest_WrongInput) {
 	simulateUserInput("35\nasd\nasd\nasd\n3\n3");
 
 	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -752,7 +752,7 @@ TEST_F(TryTest, mainMenuTest_WrongInput) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, mainMenuTest_1) {
+TEST_F(BookshelforganizerTest, mainMenuTest_1) {
 	simulateUserInput("1\nasd\nasd\nasd\n4\n3\n");
 
 	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -762,7 +762,7 @@ TEST_F(TryTest, mainMenuTest_1) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, mainMenuTest_2) {
+TEST_F(BookshelforganizerTest, mainMenuTest_2) {
 	simulateUserInput("2\nasd\nasd\nasd\nasd\nas\n3\n3");
 
 	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -772,7 +772,7 @@ TEST_F(TryTest, mainMenuTest_2) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, mainMenuTest_3) {
+TEST_F(BookshelforganizerTest, mainMenuTest_3) {
 	simulateUserInput("3\n");
 
 	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -782,7 +782,7 @@ TEST_F(TryTest, mainMenuTest_3) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, userOperationsTest_WrongInput) {
+TEST_F(BookshelforganizerTest, userOperationsTest_WrongInput) {
 	simulateUserInput("35\nasd\nasd\nasd\n4\n4\n");
 
 	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -792,7 +792,7 @@ TEST_F(TryTest, userOperationsTest_WrongInput) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, userOperationsTest_1) {
+TEST_F(BookshelforganizerTest, userOperationsTest_1) {
 	simulateUserInput("1\n7\n4\n");
 
 	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -802,7 +802,7 @@ TEST_F(TryTest, userOperationsTest_1) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, userOperationsTest_2) {
+TEST_F(BookshelforganizerTest, userOperationsTest_2) {
 	simulateUserInput("2\n6\n4\n");
 
 	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -812,7 +812,7 @@ TEST_F(TryTest, userOperationsTest_2) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, userOperationsTest_3) {
+TEST_F(BookshelforganizerTest, userOperationsTest_3) {
 	simulateUserInput("3\n6\n4\n");
 
 	bool result = userOperations(testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
@@ -822,7 +822,7 @@ TEST_F(TryTest, userOperationsTest_3) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loginUserTest_FailedFileOpen) {
+TEST_F(BookshelforganizerTest, loginUserTest_FailedFileOpen) {
 	const char* nonExistingFilePath = "empty_file.bin";
 
 	User testUser;
@@ -839,7 +839,7 @@ TEST_F(TryTest, loginUserTest_FailedFileOpen) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loginUserTest_UsersRegistered) {
+TEST_F(BookshelforganizerTest, loginUserTest_UsersRegistered) {
 	simulateUserInput("\n\n\n");
 
 	User testUser = {};
@@ -850,7 +850,7 @@ TEST_F(TryTest, loginUserTest_UsersRegistered) {
 	EXPECT_EQ(result, 0);
 }
 
-TEST_F(TryTest, loginUserTest_NoUsersRegistered) {
+TEST_F(BookshelforganizerTest, loginUserTest_NoUsersRegistered) {
 	FILE* emptyFile = fopen(testFilePathUsers, "wb");
 
 	simulateUserInput("\n\n\n");
@@ -866,7 +866,7 @@ TEST_F(TryTest, loginUserTest_NoUsersRegistered) {
 	EXPECT_EQ(result, 0);
 }
 
-TEST_F(TryTest, registerUserMenuTest_UserRegistered) {
+TEST_F(BookshelforganizerTest, registerUserMenuTest_UserRegistered) {
 
 	simulateUserInput("asd\nasd\nasd\nasd\n\n");
 
@@ -877,7 +877,7 @@ TEST_F(TryTest, registerUserMenuTest_UserRegistered) {
 	EXPECT_EQ(result, 1);
 }
 
-TEST_F(TryTest, registerUserMenuTest_NoFile) {
+TEST_F(BookshelforganizerTest, registerUserMenuTest_NoFile) {
 	testFilePathUsers = "non_existent_file6.bin";
 
 	simulateUserInput("asd\nasd\nasd\nasd\n\n");
@@ -889,7 +889,7 @@ TEST_F(TryTest, registerUserMenuTest_NoFile) {
 	EXPECT_EQ(result, 1);
 }
 
-TEST_F(TryTest, viewWishlistCatalogForFuncTest_NoBook) {
+TEST_F(BookshelforganizerTest, viewWishlistCatalogForFuncTest_NoBook) {
 	testFilePathWishlist = "non_existent_file7.bin";
 
 	simulateUserInput("\n\n");
@@ -901,7 +901,7 @@ TEST_F(TryTest, viewWishlistCatalogForFuncTest_NoBook) {
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, wishListTest_1) {
+TEST_F(BookshelforganizerTest, wishListTest_1) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n3\n\n\n6");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -911,7 +911,7 @@ TEST_F(TryTest, wishListTest_1) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_10) {
+TEST_F(BookshelforganizerTest, wishListTest_10) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n4\n\n6");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -921,7 +921,7 @@ TEST_F(TryTest, wishListTest_10) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_11) {
+TEST_F(BookshelforganizerTest, wishListTest_11) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n2\n1\n\n6");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -931,7 +931,7 @@ TEST_F(TryTest, wishListTest_11) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_12) {
+TEST_F(BookshelforganizerTest, wishListTest_12) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n2\n7\n\n6");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -941,7 +941,7 @@ TEST_F(TryTest, wishListTest_12) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_9) {
+TEST_F(BookshelforganizerTest, wishListTest_9) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n3\n1\n\n6");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -951,7 +951,7 @@ TEST_F(TryTest, wishListTest_9) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_2) {
+TEST_F(BookshelforganizerTest, wishListTest_2) {
 	simulateUserInput("2\n1\n\n6\n\nasd\n\na\n6\n\nasd\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -961,7 +961,7 @@ TEST_F(TryTest, wishListTest_2) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_3) {
+TEST_F(BookshelforganizerTest, wishListTest_3) {
 	simulateUserInput("3\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -971,7 +971,7 @@ TEST_F(TryTest, wishListTest_3) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_4) {
+TEST_F(BookshelforganizerTest, wishListTest_4) {
 	simulateUserInput("4\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -981,7 +981,7 @@ TEST_F(TryTest, wishListTest_4) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_5) {
+TEST_F(BookshelforganizerTest, wishListTest_5) {
 	simulateUserInput("5\nasd\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -991,7 +991,7 @@ TEST_F(TryTest, wishListTest_5) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_6) {
+TEST_F(BookshelforganizerTest, wishListTest_6) {
 	simulateUserInput("asd\n\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -1001,7 +1001,7 @@ TEST_F(TryTest, wishListTest_6) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_7) {
+TEST_F(BookshelforganizerTest, wishListTest_7) {
 	simulateUserInput("-23\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -1011,7 +1011,7 @@ TEST_F(TryTest, wishListTest_7) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_8BinarySearch1) {
+TEST_F(BookshelforganizerTest, wishListTest_8BinarySearch1) {
 	simulateUserInput("1\nasd\nasd\nasd\n23\n\n5\nasd\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -1021,7 +1021,7 @@ TEST_F(TryTest, wishListTest_8BinarySearch1) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_8BinarySearch2) {
+TEST_F(BookshelforganizerTest, wishListTest_8BinarySearch2) {
 	simulateUserInput("1\nqwe\nqwe\nqwe\n23\n\n5\nasd\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -1031,7 +1031,7 @@ TEST_F(TryTest, wishListTest_8BinarySearch2) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, wishListTest_8BinarySearch3) {
+TEST_F(BookshelforganizerTest, wishListTest_8BinarySearch3) {
 	simulateUserInput("1\nzxc\nzxc\nzxc\n23\n\n5\nzxc\n\n6\n");
 
 	bool result = wishList(testFilePathBooks, testFilePathWishlist);
@@ -1041,7 +1041,7 @@ TEST_F(TryTest, wishListTest_8BinarySearch3) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_1) {
+TEST_F(BookshelforganizerTest, loanManagementTest_1) {
 	simulateUserInput("asd\nasd\n\n6\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1051,7 +1051,7 @@ TEST_F(TryTest, loanManagementTest_1) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_2) {
+TEST_F(BookshelforganizerTest, loanManagementTest_2) {
 	simulateUserInput("1\n\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1061,7 +1061,7 @@ TEST_F(TryTest, loanManagementTest_2) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_3) {
+TEST_F(BookshelforganizerTest, loanManagementTest_3) {
 	simulateUserInput("2\n1\n6\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1071,7 +1071,7 @@ TEST_F(TryTest, loanManagementTest_3) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_4) {
+TEST_F(BookshelforganizerTest, loanManagementTest_4) {
 	simulateUserInput("3\n\n6\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1081,7 +1081,7 @@ TEST_F(TryTest, loanManagementTest_4) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_5) {
+TEST_F(BookshelforganizerTest, loanManagementTest_5) {
 	simulateUserInput("4\n\n6\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1091,7 +1091,7 @@ TEST_F(TryTest, loanManagementTest_5) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_6) {
+TEST_F(BookshelforganizerTest, loanManagementTest_6) {
 	simulateUserInput("5\n\n6\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1101,7 +1101,7 @@ TEST_F(TryTest, loanManagementTest_6) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, loanManagementTest_7) {
+TEST_F(BookshelforganizerTest, loanManagementTest_7) {
 	simulateUserInput("234\n\n6\n");
 
 	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
@@ -1111,7 +1111,7 @@ TEST_F(TryTest, loanManagementTest_7) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, suggestBooksToBorrowTest) {
+TEST_F(BookshelforganizerTest, suggestBooksToBorrowTest) {
 
 
 	simulateUserInput("5\n\n6\n6\n");
@@ -1123,7 +1123,7 @@ TEST_F(TryTest, suggestBooksToBorrowTest) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, SwapTest_SwapBooks) {
+TEST_F(BookshelforganizerTest, SwapTest_SwapBooks) {
 	Book book1 = { 1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10 };
 	Book book2 = { 2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20 };
 
@@ -1132,7 +1132,7 @@ TEST_F(TryTest, SwapTest_SwapBooks) {
 	EXPECT_EQ(book1.id, 1);
 }
 
-TEST_F(TryTest, PartitionTest_PartitionBooks) {
+TEST_F(BookshelforganizerTest, PartitionTest_PartitionBooks) {
 	Book books[5] = {
 		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
 		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
@@ -1147,7 +1147,7 @@ TEST_F(TryTest, PartitionTest_PartitionBooks) {
 	EXPECT_EQ(pivotIndex, 4);
 }
 
-TEST_F(TryTest, RandomPartitionTest_RandomPartitionBooks) {
+TEST_F(BookshelforganizerTest, RandomPartitionTest_RandomPartitionBooks) {
 	Book books[5] = {
 		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
 		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
@@ -1162,7 +1162,7 @@ TEST_F(TryTest, RandomPartitionTest_RandomPartitionBooks) {
 	EXPECT_LE(pivotIndex, 4);
 }
 
-TEST_F(TryTest, RandomizedQuickSortTest_RandomizedQuickSortBooks) {
+TEST_F(BookshelforganizerTest, RandomizedQuickSortTest_RandomizedQuickSortBooks) {
 	Book books[5] = {
 		{4, "Book 4", "Author 4", "Genre 4", {4, "Mike", "", "", ""}, 0, 40},
 		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
@@ -1176,7 +1176,7 @@ TEST_F(TryTest, RandomizedQuickSortTest_RandomizedQuickSortBooks) {
 	EXPECT_EQ(result, 1);
 }
 
-TEST_F(TryTest, FindLCSTest_LCSBetweenStrings) {
+TEST_F(BookshelforganizerTest, FindLCSTest_LCSBetweenStrings) {
 	const char* s1 = "abcd";
 	const char* s2 = "acdb";
 
@@ -1189,7 +1189,7 @@ TEST_F(TryTest, FindLCSTest_LCSBetweenStrings) {
 	EXPECT_FALSE(isEqual);
 }
 
-TEST_F(TryTest, MainMatrixTest_BooksFoundTest) {
+TEST_F(BookshelforganizerTest, MainMatrixTest_BooksFoundTest) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	Book books[] = {
@@ -1213,7 +1213,7 @@ TEST_F(TryTest, MainMatrixTest_BooksFoundTest) {
 	EXPECT_EQ(result, 0);
 }
 
-TEST_F(TryTest, DeleteBookTest_BookIdFoundTest) {
+TEST_F(BookshelforganizerTest, DeleteBookTest_BookIdFoundTest) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	Book books[] = {
@@ -1229,7 +1229,7 @@ TEST_F(TryTest, DeleteBookTest_BookIdFoundTest) {
 	EXPECT_TRUE(isFound);
 }
 
-TEST_F(TryTest, DeleteBookTest_BookDeletedSuccessfullyTest) {
+TEST_F(BookshelforganizerTest, DeleteBookTest_BookDeletedSuccessfullyTest) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	Book books[] = {
@@ -1245,7 +1245,7 @@ TEST_F(TryTest, DeleteBookTest_BookDeletedSuccessfullyTest) {
 	EXPECT_TRUE(isFound);
 }
 
-TEST_F(TryTest, viewCatalog_BooksExistTest) {
+TEST_F(BookshelforganizerTest, viewCatalog_BooksExistTest) {
 
 	const char* testFilePathBooks = "test_books.txt";
 
@@ -1264,7 +1264,7 @@ TEST_F(TryTest, viewCatalog_BooksExistTest) {
 	EXPECT_EQ(result, 1);
 }
 
-TEST_F(TryTest, ViewCatalogForFuncTest_NoBooksOwnedTest) {
+TEST_F(BookshelforganizerTest, ViewCatalogForFuncTest_NoBooksOwnedTest) {
 	const char* testFilePathBooks = "testBooks.txt";
 
 	simulateUserInput("3\n7\n");
@@ -1274,7 +1274,7 @@ TEST_F(TryTest, ViewCatalogForFuncTest_NoBooksOwnedTest) {
 	EXPECT_EQ(result, 1);
 }
 
-TEST_F(TryTest, ViewCatalogForFuncTest_BooksExistTest) {
+TEST_F(BookshelforganizerTest, ViewCatalogForFuncTest_BooksExistTest) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	Book books[] = {
@@ -1292,7 +1292,7 @@ TEST_F(TryTest, ViewCatalogForFuncTest_BooksExistTest) {
 	EXPECT_EQ(result, 1);
 }
 
-TEST_F(TryTest, DeleteBookMenuTest_DeleteBookSuccessTest) {
+TEST_F(BookshelforganizerTest, DeleteBookMenuTest_DeleteBookSuccessTest) {
 	const char* testFilePathBooks = "test_books.txt";
 	const int testBookId = 1;
 
@@ -1303,7 +1303,7 @@ TEST_F(TryTest, DeleteBookMenuTest_DeleteBookSuccessTest) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, UpdateBookMenuTest_InputErrorTest) {
+TEST_F(BookshelforganizerTest, UpdateBookMenuTest_InputErrorTest) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	simulateUserInput("-1\n\nasd\n");
@@ -1313,7 +1313,7 @@ TEST_F(TryTest, UpdateBookMenuTest_InputErrorTest) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, UpdateBookMenuTest_UpdateSuccessfulTest) {
+TEST_F(BookshelforganizerTest, UpdateBookMenuTest_UpdateSuccessfulTest) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	simulateUserInput("1\nasd\nqwe\nsdf\n50\n\nasd\n");
@@ -1324,7 +1324,7 @@ TEST_F(TryTest, UpdateBookMenuTest_UpdateSuccessfulTest) {
 	EXPECT_TRUE(result);
 }
 
-TEST_F(TryTest, UpdateBookMenuTest_WrongPrice) {
+TEST_F(BookshelforganizerTest, UpdateBookMenuTest_WrongPrice) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	simulateUserInput("1\nasd\nqwe\nsdf\n-1\n\nasd\n");
@@ -1335,7 +1335,7 @@ TEST_F(TryTest, UpdateBookMenuTest_WrongPrice) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, UpdateBookMenuTest_NoBookId) {
+TEST_F(BookshelforganizerTest, UpdateBookMenuTest_NoBookId) {
 	const char* testFilePathBooks = "test_books.txt";
 
 	simulateUserInput("25\nasd\nqwe\nsdf\n5\n\nasd\n");
@@ -1346,7 +1346,7 @@ TEST_F(TryTest, UpdateBookMenuTest_NoBookId) {
 	EXPECT_FALSE(result);
 }
 
-TEST_F(TryTest, BorrowBookTest_BorrowBook_SuccessfulBorrow) {
+TEST_F(BookshelforganizerTest, BorrowBookTest_BorrowBook_SuccessfulBorrow) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1366,7 +1366,7 @@ TEST_F(TryTest, BorrowBookTest_BorrowBook_SuccessfulBorrow) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, BorrowBookTest_BorrowBook_BookNotFound) {
+TEST_F(BookshelforganizerTest, BorrowBookTest_BorrowBook_BookNotFound) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1381,7 +1381,7 @@ TEST_F(TryTest, BorrowBookTest_BorrowBook_BookNotFound) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, GiveBackBookTest_GiveBackBook_SuccessfulGiveBack) {
+TEST_F(BookshelforganizerTest, GiveBackBookTest_GiveBackBook_SuccessfulGiveBack) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1409,7 +1409,7 @@ TEST_F(TryTest, GiveBackBookTest_GiveBackBook_SuccessfulGiveBack) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, GiveBackBookTest_GiveBackBook_BookNotBorrowedByUser) {
+TEST_F(BookshelforganizerTest, GiveBackBookTest_GiveBackBook_BookNotBorrowedByUser) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1438,7 +1438,7 @@ TEST_F(TryTest, GiveBackBookTest_GiveBackBook_BookNotBorrowedByUser) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_NotSuccessfulBorrow) {
+TEST_F(BookshelforganizerTest, BorrowBookMenuTest_BorrowBookMenu_NotSuccessfulBorrow) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1458,7 +1458,7 @@ TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_NotSuccessfulBorrow) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_SuccessfulBorrow) {
+TEST_F(BookshelforganizerTest, BorrowBookMenuTest_BorrowBookMenu_SuccessfulBorrow) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1478,7 +1478,7 @@ TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_SuccessfulBorrow) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_NoAvailableBooks) {
+TEST_F(BookshelforganizerTest, BorrowBookMenuTest_BorrowBookMenu_NoAvailableBooks) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1497,7 +1497,7 @@ TEST_F(TryTest, BorrowBookMenuTest_BorrowBookMenu_NoAvailableBooks) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, BorrowBookMenuTest_BorrowBook_SuccessfulBorrow) {
+TEST_F(BookshelforganizerTest, BorrowBookMenuTest_BorrowBook_SuccessfulBorrow) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1515,7 +1515,7 @@ TEST_F(TryTest, BorrowBookMenuTest_BorrowBook_SuccessfulBorrow) {
 	remove(testBooksFile);
 }
 
-TEST_F(TryTest, BorrowBookMenuTest_BorrowBook_ErrorBorrow) {
+TEST_F(BookshelforganizerTest, BorrowBookMenuTest_BorrowBook_ErrorBorrow) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1533,7 +1533,7 @@ TEST_F(TryTest, BorrowBookMenuTest_BorrowBook_ErrorBorrow) {
 	remove(testBooksFile);
 }
 
-TEST_F(TryTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn) {
+TEST_F(BookshelforganizerTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1573,7 +1573,7 @@ TEST_F(TryTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn1) {
+TEST_F(BookshelforganizerTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn1) {
 	const char* testBooksFile = "testBooks.bin";
 	const char* testHistoriesFile = "testHistories.bin";
 
@@ -1610,7 +1610,7 @@ TEST_F(TryTest, GiveBackBookMenu_ReturnBook_SuccessfulReturn1) {
 	remove(testHistoriesFile);
 }
 
-TEST_F(TryTest, SuggestBooksToBorrow_SuggestedBooksReturned_Correctly) {
+TEST_F(BookshelforganizerTest, SuggestBooksToBorrow_SuggestedBooksReturned_Correctly) {
 	const char* testBooksFile = "testBooks.bin";
 
 	Book testBooks[5];
@@ -1637,13 +1637,13 @@ TEST_F(TryTest, SuggestBooksToBorrow_SuggestedBooksReturned_Correctly) {
 	remove(testBooksFile);
 }
 
-TEST_F(TryTest, MinFunctionTest_ReturnsCorrectMinimumValue) {
+TEST_F(BookshelforganizerTest, MinFunctionTest_ReturnsCorrectMinimumValue) {
 	int a = 5, b = 10;
 	int result1 = min(a, b);
 	EXPECT_EQ(result1, a) << "Expected " << a << " but got " << result1;
 }
 
-TEST_F(TryTest, minCostArrangingBooksTest) {
+TEST_F(BookshelforganizerTest, minCostArrangingBooksTest) {
 	const char* testBooksFile = "testBooks.bin";
 
 	Book testBook;
