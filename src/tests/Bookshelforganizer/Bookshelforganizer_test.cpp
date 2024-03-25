@@ -197,3 +197,36 @@ TEST_F(TryTest, getNewBookIdTest_NoBook) {
 
 	EXPECT_EQ(expectedNewBookId, newBookId);
 }
+
+TEST_F(TryTest, saveBooksTest) {
+	const char* path = "testBooks.bin";
+
+	Book books[3] = {
+		{ 1, "Book Title 1", "Author 1", "asd" , 0 , 0 ,0 },
+		{ 2, "Book Title 2", "Author 2", "asda" , 0 , 0 ,0 },
+		{ 3, "Book Title 3", "Author 3", "aassd" , 0 , 0 ,0 }
+	};
+
+	int saveResult = saveBooks(path, books, 3);
+
+	int expectedSaveResult = 1;
+
+	EXPECT_EQ(expectedSaveResult, saveResult);
+}
+
+TEST_F(TryTest, getNewWishlistIdTest) {
+	const char* pathFileWishlist = "testWishlist.bin";
+
+	FILE* file = fopen(pathFileWishlist, "wb");
+	if (file) {
+		Book book = { 1, "Book Title 1", "Author 1", "dfggc", 0 , 0 ,0 };
+		fwrite(&book, sizeof(Book), 1, file);
+		fclose(file);
+	}
+
+	int newWishlistId = getNewWishlistId(pathFileWishlist);
+
+	int expectedNewWishlistId = 2;
+
+	EXPECT_EQ(expectedNewWishlistId, newWishlistId);
+}
