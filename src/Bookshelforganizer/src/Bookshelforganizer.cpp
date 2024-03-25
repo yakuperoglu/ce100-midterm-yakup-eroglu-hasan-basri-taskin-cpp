@@ -2027,3 +2027,144 @@ int wishList(const char* pathFileBooks, const char* pathFileWishlist) {
 		}
 	}
 }
+
+//Wishlist
+
+
+//Register-Login
+/**
+ * @brief Registers a new user.
+ *
+ * This function registers a new user by adding their information to the user database file.
+ *
+ * @param user The user to register.
+ * @param pathFileUser The path to the user database file.
+ * @return 1 if the user is registered successfully, 0 otherwise.
+ */
+int registerUser(User user, const char* pathFileUser) {
+	FILE* file = fopen(pathFileUser, "rb+");
+	int userCount = 0;
+	User* users = NULL;
+
+	if (file) {
+
+		fread(&userCount, sizeof(int), 1, file);
+		if (userCount > 0) {
+			users = (User*)malloc(sizeof(User) * userCount);
+			fread(users, sizeof(User), userCount, file);
+
+			for (int i = 0; i < userCount; ++i) {
+				if (strcmp(users[i].email, user.email) == 0) {
+					printf("User already exists.\n");
+					fclose(file);
+					free(users);
+					enterToContinue();
+					return 0;
+				}
+			}
+		}
+		rewind(file);
+	}
+	else {
+		file = fopen(pathFileUser, "wb");
+	}
+
+	user.id = getNewUserId(users, userCount);
+	userCount++;
+	users = (User*)realloc(users, sizeof(User) * userCount);
+	users[userCount - 1] = user;
+
+	fwrite(&userCount, sizeof(int), 1, file);
+	fwrite(users, sizeof(User), userCount, file);
+
+	printf("User registered successfully: Welcome %s %s\n", user.name, user.surname);
+
+	if (users != NULL) {
+		free(users);
+	}
+	fclose(file);
+	enterToContinue();
+	return 1;
+}
+
+/**
+ * @brief Displays a menu for user registration.
+ *
+ * This function prompts the user to input their name, surname, email, and password for registration.
+ *
+ * @param pathFileUsers The path to the user database file.
+ * @return 1 if the registration process is completed successfully, 0 otherwise.
+ */
+int registerUserMenu(const char* pathFileUsers) {
+	clearScreen();
+	User newUser;
+
+	printf("Enter Name: ");
+	fgets(newUser.name, sizeof(newUser.name), stdin);
+	newUser.name[strcspn(newUser.name, "\n")] = 0;
+
+	printf("Enter Surname: ");
+	fgets(newUser.surname, sizeof(newUser.surname), stdin);
+	newUser.surname[strcspn(newUser.surname, "\n")] = 0;
+
+	printf("Enter email: ");
+	fgets(newUser.email, sizeof(newUser.email), stdin);
+	newUser.email[strcspn(newUser.email, "\n")] = 0;
+
+	printf("Enter password: ");
+	fgets(newUser.password, sizeof(newUser.password), stdin);
+	newUser.password[strcspn(newUser.password, "\n")] = 0;
+
+	if (registerUser(newUser, pathFileUsers)) {
+		return 1;
+	}
+	else {
+		printf("Registration failed.\n");
+	}
+
+	enterToContinue();
+	return 1;
+}
+
+/**
+ * @brief Logs in a user.
+ *
+ * This function verifies the user's email and password against the user database file for login.
+ *
+ * @param loginUser The user attempting to log in.
+ * @param pathFileUsers The path to the user database file.
+ * @return 1 if the login is successful, 0 otherwise.
+ */
+int loginUser(User loginUser, const char* pathFileUsers) {
+	FILE* file = fopen(pathFileUsers, "rb");
+	if (!file) {
+		printf("Failed to open user file.\n");
+		return 0;
+	}
+
+	int userCount = 0;
+	fread(&userCount, sizeof(int), 1, file);
+	if (userCount == 0) {
+		printf("No users registered.\n");
+		fclose(file);
+		enterToContinue();
+		return 0;
+	}
+
+	User userFromFile;
+	for (int i = 0; i < userCount; i++) {
+		fread(&userFromFile, sizeof(User), 1, file);
+		if (strcmp(userFromFile.email, loginUser.email) == 0 && strcmp(userFromFile.password, loginUser.password) == 0) {
+			printf("Login successful.\n");
+			fclose(file);
+			enterToContinue();
+			loggedUser = userFromFile;
+			return 1;
+		}
+	}
+
+	printf("Incorrect email or password.\n");
+	fclose(file);
+	enterToContinue();
+	return 0;
+}
