@@ -219,3 +219,104 @@ int getNewUserId(User users[], int userCount) {
 
 	return maxId + 1;
 }
+/**
+ * @brief Gets a new unique book ID.
+ *
+ * This function determines a new unique book ID based on the existing book IDs
+ * loaded from the specified file. If no books are loaded or the file is empty, it
+ * returns 1. Otherwise, it loads the books, sorts them by ID, and returns the maximum
+ * ID incremented by 1.
+ *
+ * @param pathFileBooks The path to the file containing the book information.
+ * @return A new unique book ID.
+ */
+int getNewBookId(const char* pathFileBooks) {
+	Book* books;
+	int count = loadBooks(pathFileBooks, &books);
+	if (count == 0)
+		return 1;
+
+	randomizedQuickSortBookIds(books, 0, count - 1);
+
+	int newId = books[count - 1].id + 1;
+	free(books);
+	return newId;
+}
+/**
+ * @brief Saves book information to a file.
+ *
+ * This function saves the provided array of Book structures to the specified file.
+ * If successful, it returns 1; otherwise, it returns 0.
+ *
+ * @param path The path to the file where book information will be saved.
+ * @param books An array of Book structures containing book information.
+ * @param count The number of books in the array.
+ * @return 1 if successful, 0 otherwise.
+ */
+int saveBooks(const char* path, Book* books, int count) {
+	FILE* file = fopen(path, "wb");
+	if (file != NULL) {
+		fwrite(books, sizeof(Book), count, file);
+		fclose(file);
+		return 1;
+	}
+}
+/**
+ * @brief Gets a new unique wishlist ID.
+ *
+ * This function determines a new unique wishlist ID based on the existing book IDs
+ * loaded from the specified file. If no books are loaded or the file is empty, it
+ * returns 1. Otherwise, it loads the books, sorts them by ID, and returns the maximum
+ * ID incremented by 1.
+ *
+ * @param pathFileWishlist The path to the file containing the wishlist information.
+ * @return A new unique wishlist ID.
+ */
+int getNewWishlistId(const char* pathFileWishlist) {
+	Book* books;
+	int count = loadBooks(pathFileWishlist, &books);
+	if (count == 0)
+		return 1;
+
+	randomizedQuickSortBookIds(books, 0, count - 1);
+
+	int newId = books[count - 1].id + 1;
+	free(books);
+	return newId;
+}
+
+//IDK
+
+
+//Load
+/**
+ * @brief Loads books owned by a specific user from a file.
+ *
+ * This function loads books owned by a specific user from the specified file.
+ * It reads book records from the file and filters out books owned by the given user.
+ * The loaded books are stored in the dynamically allocated 'books' array.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @param books A pointer to a pointer to Book structures where loaded books will be stored.
+ * @param userId The ID of the user whose owned books are to be loaded.
+ * @return The number of books owned by the user loaded from the file, or -1 if the file cannot be opened.
+ */
+int loadOwnedBooks(const char* pathFileBooks, Book** books, int userId) {
+	FILE* file = fopen(pathFileBooks, "rb");
+	if (!file) {
+		printf("Failed to open file\n");
+		return -1;
+	}
+
+	Book temp;
+	int count = 0;
+	while (fread(&temp, sizeof(Book), 1, file) == 1) {
+		if (temp.owner.id == userId) {
+			*books = (Book*)realloc(*books, (count + 1) * sizeof(Book));
+			(*books)[count] = temp;
+			count++;
+		}
+	}
+	fclose(file);
+	return count;
+}
