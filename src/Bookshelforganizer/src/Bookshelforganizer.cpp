@@ -2251,3 +2251,42 @@ int userOperations(const char* pathFileBooks, const char* pathFileHistories, con
  * @param pathFileWishlist The path to the wishlist database file.
  * @return 0 when the user chooses to exit the program.
  */
+int mainMenu(const char* pathFileUsers, const char* pathFileBooks, const char* pathFileLendingHistories, const char* pathFileWishlist) {
+	int choice;
+
+	while (1) {
+		clearScreen();
+		printMainMenu();
+
+		choice = getInput();
+
+		if (choice == -2) {
+			handleInputError();
+			enterToContinue();
+			continue;
+		}
+
+		switch (choice) {
+		case 1:
+			clearScreen();
+			if (loginUserMenu(pathFileUsers)) userOperations(pathFileBooks, pathFileLendingHistories, pathFileWishlist);
+			break;
+
+		case 2:
+			clearScreen();
+			registerUserMenu(pathFileUsers);
+			break;
+
+		case 3:
+			printf("Exit Program\n");
+			return 0;
+
+		default:
+			printf("Invalid choice. Please try again.\n");
+			enterToContinue();
+			break;
+		}
+	}
+}
+
+//Menus
