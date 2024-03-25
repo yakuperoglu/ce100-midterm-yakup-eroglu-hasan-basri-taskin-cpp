@@ -320,3 +320,91 @@ int loadOwnedBooks(const char* pathFileBooks, Book** books, int userId) {
 	fclose(file);
 	return count;
 }
+/**
+ * @brief Loads user information from a file.
+ *
+ * This function loads user information from the specified file. It reads the number of
+ * users first and then reads user records from the file. The loaded users are stored
+ * in the dynamically allocated 'users' array.
+ *
+ * @param pathFileUsers The path to the file containing user information.
+ * @param users A pointer to a pointer to User structures where loaded users will be stored.
+ * @return The number of users loaded from the file, or 0 if the file cannot be opened.
+ */
+int loadUsers(const char* pathFileUsers, User** users) {
+	FILE* file = fopen(pathFileUsers, "rb");
+	if (!file) {
+		*users = NULL;
+		return 0;
+	}
+
+	int count;
+	fread(&count, sizeof(int), 1, file);
+
+	*users = (User*)malloc(sizeof(User) * count);
+	fread(*users, sizeof(User), count, file);
+
+	fclose(file);
+	return count;
+}
+
+/**
+ * @brief Loads books from a file.
+ *
+ * This function loads book information from the specified file. It reads book records
+ * from the file and stores them in the dynamically allocated 'books' array.
+ *
+ * @param path The path to the file containing book information.
+ * @param books A pointer to a pointer to Book structures where loaded books will be stored.
+ * @return The number of books loaded from the file, or 0 if the file cannot be opened.
+ */
+int loadBooks(const char* path, Book** books) {
+	FILE* file = fopen(path, "rb");
+	if (file == NULL) return 0;
+
+	fseek(file, 0, SEEK_END);
+	long size = ftell(file);
+	fseek(file, 0, SEEK_SET);
+
+	int count = size / sizeof(Book);
+	*books = (Book*)malloc(size);
+
+	fread(*books, sizeof(Book), count, file);
+	fclose(file);
+
+	return count;
+}
+
+/**
+ * @brief Loads books owned by a specific user from a file.
+ *
+ * This function loads books owned by a specific user from the specified file.
+ * It reads book records from the file and filters out books owned by the given user.
+ * The loaded books are stored in the dynamically allocated 'filteredBooks' array.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @param userId The ID of the user whose owned books are to be loaded.
+ * @param filteredBooks A pointer to a pointer to Book structures where loaded books will be stored.
+ * @return The number of books owned by the user loaded from the file, or -1 if the file cannot be opened.
+ */
+int loadBooksForUser(const char* pathFileBooks, int userId, Book** filteredBooks) {
+	int size = 0;
+
+	FILE* file = fopen(pathFileBooks, "rb");
+	if (file == NULL) {
+		return -1;
+	}
+
+	Book temp;
+	while (fread(&temp, sizeof(Book), 1, file) == 1) {
+		if (temp.owner.id == userId) {
+			size++;
+			*filteredBooks = (Book*)realloc(*filteredBooks, size * sizeof(Book));
+			(*filteredBooks)[size - 1] = temp;
+		}
+	}
+
+	fclose(file);
+	return size;
+}
+
