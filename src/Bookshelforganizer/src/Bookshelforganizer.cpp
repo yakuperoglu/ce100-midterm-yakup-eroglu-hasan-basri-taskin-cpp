@@ -1602,3 +1602,106 @@ int viewGivenBooks(const char* pathFileHistories) {
 	enterToContinue();
 	return 1;
 }
+/**
+ * @brief Writes the borrowed books of the current user to the console.
+ *
+ * This function retrieves loan histories, filters borrowed books of the current user, and prints them to the console.
+ *
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return 1 if the user has borrowed books, 0 otherwise.
+ */
+int writeBorrowedBooksToConsole(const char* pathFileHistories) {
+	LoanedHistory* histories = NULL;
+	int count = loadLoanedHistories(pathFileHistories, &histories);
+	int hasBorrowedBooks = 0;
+
+	for (int i = 0; i < count; i++) {
+		if (histories[i].debtorUserId == loggedUser.id && !histories[i].hasGivenBack) {
+			printf("Book ID: %d, Book Name: %s, Owner Name : %s\n",
+				histories[i].bookId, histories[i].bookName, histories[i].bookOwnerName);
+			hasBorrowedBooks = 1;
+		}
+	}
+
+	if (!hasBorrowedBooks) {
+		printf("You didn't borrowed any books\n");
+	}
+
+	free(histories);
+	return hasBorrowedBooks;
+}
+/**
+ * @brief Writes the given books of the user to the console.
+ *
+ * This function retrieves loan histories, filters books given by the user, and prints them to the console.
+ *
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return 1 if the user has given books, 0 otherwise.
+ */
+int writeGivenBooksToConsole(const char* pathFileHistories) {
+	LoanedHistory* histories = NULL;
+	int count = loadLoanedHistories(pathFileHistories, &histories);
+	int hasGivenBooks = 0;
+
+	for (int i = 0; i < count; i++) {
+		if (histories[i].bookOwnerId == loggedUser.id && histories[i].hasGivenBack == 0) {
+			printf("Book ID: %d, Book Name: %s, Debtor Name Surname: %s\n",
+				histories[i].bookId, histories[i].bookName, histories[i].debtorUserName);
+			hasGivenBooks = 1;
+		}
+	}
+
+	if (!hasGivenBooks) {
+		printf("You haven't given any books.\n");
+	}
+
+	free(histories);
+	return hasGivenBooks;
+}
+/**
+ * @brief Suggests books for the user to borrow.
+ *
+ * This function suggests books for the user to borrow based on the titles of the books they already own.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return The number of suggested books.
+ */
+int suggestBooksToBorrow(const char* pathFileBooks) {
+	Book* books = NULL, * userBooks = NULL, * suggestedBooks = NULL;
+	int booksCount = loadBooks(pathFileBooks, &books);
+	int userBooksCount = loadBooksForUser(pathFileBooks, loggedUser.id, &userBooks);
+	int suggestedCount = 0;
+
+	for (int i = 0; i < booksCount; ++i) {
+		bool isOwnedByUser = false;
+		for (int j = 0; j < userBooksCount; ++j) {
+			if (books[i].id == userBooks[j].id) {
+				isOwnedByUser = true;
+				break;
+			}
+		}
+
+		if (!isOwnedByUser && !books[i].isBorrowed) {
+			for (int j = 0; j < userBooksCount; ++j) {
+				if (findLCS(books[i].title, userBooks[j].title) > 0.000001) {
+					suggestedBooks = (Book*)realloc(suggestedBooks, (suggestedCount + 1) * sizeof(Book));
+					suggestedBooks[suggestedCount++] = books[i];
+					break;
+				}
+			}
+		}
+	}
+
+	printf("Suggested Books:\n");
+	for (int i = 0; i < suggestedCount; ++i) {
+		printf("ID: %d, Title: %s, Author: %s, Genre: %s\n",
+			suggestedBooks[i].id, suggestedBooks[i].title, suggestedBooks[i].author, suggestedBooks[i].genre);
+	}
+	enterToContinue();
+
+	free(books);
+	free(userBooks);
+	free(suggestedBooks);
+
+	return suggestedCount;
+}
