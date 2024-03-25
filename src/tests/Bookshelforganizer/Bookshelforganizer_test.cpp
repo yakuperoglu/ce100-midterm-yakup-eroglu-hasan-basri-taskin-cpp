@@ -1,57 +1,83 @@
-//#define ENABLE_BOOKSHELFORGANIZER_TEST  // Uncomment this line to enable the Bookshelforganizer tests
-
+#define _CRT_SECURE_NO_WARNINGS
+#include "../../try/header/try.h"  
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 #include "gtest/gtest.h"
-#include "../../bookshelforganizer/header/bookshelforganizer.h"  // Adjust this include path based on your project structure
-
-using namespace Coruh::Bookshelforganizer;
 
 class BookshelforganizerTest : public ::testing::Test {
 protected:
+	const char* inputTest = "inputTest.txt";
+	const char* outputTest = "outputTest.txt";
 	void SetUp() override {
 		// Setup test data
 	}
 
 	void TearDown() override {
-		// Clean up test data
+		remove("inputTest");
+		remove("outputTest");
+		remove("testBooks.bin");
+		remove("testNoBooks.bin");
+		remove("testWishlist.bin");
+		remove("testWishlistNoBook.bin");
+		remove("non_existent_file.bin");
+		remove("non_existent_file1.bin");
+		remove("non_existent_file2.bin");
+		remove("non_existent_file3.bin");
+		remove("non_existent_file4.bin");
+		remove("non_existent_file5.bin");
+		remove("non_existent_file6.bin");
+		remove("non_existent_file7.bin");
+		remove("testNoUsers.bin");
+		remove("testBooksForUser.bin");
+		remove("empty_file.bin");
+		remove("non_empty_file.bin");
+		remove("testHistories.bin");
+
 	}
+	void simulateUserInput(const char* userInput) {
+		FILE* fileinput = fopen(inputTest, "wb");
+		fputs(userInput, fileinput);
+		fclose(fileinput);
+		freopen(inputTest, "rb", stdin);
+		freopen(outputTest, "wb", stdout);
+	}
+
+	void readOutput(const char* outputFilePath, char* buffer, size_t bufferSize) {
+		FILE* fileoutput = fopen(outputFilePath, "rb");
+		size_t charsRead = fread(buffer, sizeof(char), bufferSize - 1, fileoutput);
+		fclose(fileoutput);
+		buffer[charsRead] = '\0';
+		removeClearScreenCharsFromOutputFile(buffer);
+	}
+
+	void resetStdinStdout() {
+		fclose(stdin);
+		fflush(stdout);
+#ifdef _WIN32
+		freopen("CON", "a", stdout);
+		freopen("CON", "r", stdin);
+#else
+		freopen("/dev/tty", "a", stdout);
+		freopen("/dev/tty", "r", stdin);
+#endif // _WIN32
+	}
+
+	void removeClearScreenCharsFromOutputFile(char* str) {
+		char* src = str;
+		char* dst = str;
+		while (*src) {
+			if (*src != '\f') {
+				*dst++ = *src;
+			}
+			src++;
+		}
+		*dst = '\0';
+	}
+
 };
 
-TEST_F(BookshelforganizerTest, TestAdd) {
-	double result = Bookshelforganizer::add(5.0, 3.0);
-	EXPECT_DOUBLE_EQ(result, 8.0);
-}
-
-TEST_F(BookshelforganizerTest, TestSubtract) {
-	double result = Bookshelforganizer::subtract(5.0, 3.0);
-	EXPECT_DOUBLE_EQ(result, 2.0);
-}
-
-TEST_F(BookshelforganizerTest, TestMultiply) {
-	double result = Bookshelforganizer::multiply(5.0, 3.0);
-	EXPECT_DOUBLE_EQ(result, 15.0);
-}
-
-TEST_F(BookshelforganizerTest, TestDivide) {
-	double result = Bookshelforganizer::divide(6.0, 3.0);
-	EXPECT_DOUBLE_EQ(result, 2.0);
-}
-
-TEST_F(BookshelforganizerTest, TestDivideByZero) {
-	EXPECT_THROW(Bookshelforganizer::divide(5.0, 0.0), std::invalid_argument);
-}
-
-/**
- * @brief The main function of the test program.
- *
- * @param argc The number of command-line arguments.
- * @param argv An array of command-line argument strings.
- * @return int The exit status of the program.
- */
-int main(int argc, char** argv) {
-#ifdef ENABLE_BOOKSHELFORGANIZER_TEST
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
-#else
-	return 0;
-#endif
-}
+const char* testFilePathUsers = "testUsers.bin";
+const char* testFilePathBooks = "testBooks.bin";
+const char* testFilePathLendingHistories = "testHistories.bin";
+const char* testFilePathWishlist = "testWishlist.bin";
