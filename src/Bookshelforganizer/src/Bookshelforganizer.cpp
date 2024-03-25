@@ -13,7 +13,7 @@
 #include <string.h>
 #include <limits.h>
 #include <stdbool.h>
-#include "Try.h"
+#include "Bookshelforganizer.h"
 
  /**
   * @brief Clears the console screen.
@@ -1824,4 +1824,99 @@ bool deleteBookFromWishlistMenu(const char* pathFileWishlist) {
 		free(books);
 	}
 	return result;
+}
+/**
+ * @brief Displays the wishlist.
+ *
+ * This function displays the books in the wishlist.
+ *
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 1 if the wishlist is displayed successfully, 0 otherwise.
+ */
+int viewWishlist(const char* pathFileWishlist) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadOwnedBooks(pathFileWishlist, &books, loggedUser.id);
+
+	if (bookCount <= 0) {
+		printf("No books owned.\n");
+	}
+	else {
+		for (int i = 0; i < bookCount; i++) {
+			printf("ID: %d, Title: %s, Author: %s, Genre: %s, Cost: %d\n",
+				books[i].id, books[i].title, books[i].author, books[i].genre, books[i].cost);
+		}
+	}
+
+	enterToContinue();
+	free(books);
+	return 1;
+}
+
+/**
+ * @brief Displays the user's wishlist for function purposes.
+ *
+ * This function displays the books in the user's wishlist without clearing the screen.
+ *
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 1 if the wishlist is displayed successfully, 0 otherwise.
+ */
+int viewWishlistCatalogForFunc(const char* pathFileWishlist) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadOwnedBooks(pathFileWishlist, &books, loggedUser.id);
+
+	if (bookCount <= 0) {
+		printf("No books owned.\n");
+	}
+	else {
+		for (int i = 0; i < bookCount; i++) {
+			printf("ID: %d, Title: %s, Author: %s, Genre: %s, Cost: %d\n",
+				books[i].id, books[i].title, books[i].author, books[i].genre, books[i].cost);
+		}
+	}
+
+	free(books);
+	return 1;
+}
+
+/**
+ * @brief Displays a menu for searching a book in the wishlist.
+ *
+ * This function prompts the user to input the title of the book they are looking for and searches it in the wishlist.
+ *
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 1 if the search operation is completed successfully, 0 otherwise.
+ */
+int searchWishlistMenu(const char* pathFileWishlist) {
+	clearScreen();
+	printf("Enter the title of the book you're looking for: ");
+	char targetTitle[100];
+	fgets(targetTitle, sizeof(targetTitle), stdin);
+	targetTitle[strcspn(targetTitle, "\n")] = 0; // Remove newline character
+
+	// Load Wishlist Books
+	Book* books = NULL;
+	int bookCount = loadOwnedBooks(pathFileWishlist, &books, loggedUser.id);
+
+	if (bookCount <= 0) {
+		printf("Your wishlist is empty.\n");
+		enterToContinue();
+		return 0;
+	}
+
+	// Assuming books are sorted by title
+	int resultIndex = binarySearchBookByTitle(books, 0, bookCount - 1, targetTitle);
+
+	if (resultIndex != -1) {
+		printf("Book found: ID: %d, Title: %s, Author: %s, Genre: %s, Cost: %d\n",
+			books[resultIndex].id, books[resultIndex].title, books[resultIndex].author, books[resultIndex].genre, books[resultIndex].cost);
+	}
+	else {
+		printf("Book with title '%s' not found in your wishlist.\n", targetTitle);
+	}
+
+	enterToContinue();
+	free(books);
+	return 1;
 }
