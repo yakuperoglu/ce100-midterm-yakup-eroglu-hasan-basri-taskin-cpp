@@ -1040,3 +1040,85 @@ TEST_F(TryTest, wishListTest_8BinarySearch3) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, loanManagementTest_1) {
+	simulateUserInput("asd\nasd\n\n6\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loanManagementTest_2) {
+	simulateUserInput("1\n\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loanManagementTest_3) {
+	simulateUserInput("2\n1\n6\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loanManagementTest_4) {
+	simulateUserInput("3\n\n6\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loanManagementTest_5) {
+	simulateUserInput("4\n\n6\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loanManagementTest_6) {
+	simulateUserInput("5\n\n6\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, loanManagementTest_7) {
+	simulateUserInput("234\n\n6\n");
+
+	bool result = loanManagement(testFilePathBooks, testFilePathLendingHistories);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, suggestBooksToBorrowTest) {
+
+
+	simulateUserInput("5\n\n6\n6\n");
+
+	bool result = suggestBooksToBorrow(testFilePathBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
