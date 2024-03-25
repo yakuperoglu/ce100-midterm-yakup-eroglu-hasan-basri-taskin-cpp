@@ -105,7 +105,6 @@ int printMainMenu() {
 	return 1;
 }
 
-
 /**
  * @brief Prints the user operations menu.
  *
@@ -1705,6 +1704,10 @@ int suggestBooksToBorrow(const char* pathFileBooks) {
 
 	return suggestedCount;
 }
+
+//LoanManagement
+
+
 //Wishlist
 /**
  * @brief Deletes a book from the wishlist.
