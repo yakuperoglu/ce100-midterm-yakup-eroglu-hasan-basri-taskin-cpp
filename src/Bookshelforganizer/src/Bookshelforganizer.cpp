@@ -762,3 +762,272 @@ int mainMatrix(const char* pathFileBooks) {
 
 	return 0;
 }
+/**
+ * @brief Calls the main function to calculate the minimum cost of arranging books.
+ *
+ * This function calls the main function `mainMatrix()` to calculate the minimum cost of arranging books.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return Always returns 0.
+ */
+int callMainMatrix(const char* pathFileBooks) {
+
+	mainMatrix(pathFileBooks);
+	return 0;
+}
+/**
+ * @brief Finds the minimum of two integers.
+ *
+ * This function returns the minimum of two integers.
+ *
+ * @param a The first integer.
+ * @param b The second integer.
+ * @return The minimum of the two integers.
+ */
+int min(int a, int b) {
+	return a < b ? a : b;
+}
+
+/**
+ * @brief Computes the minimum cost of arranging books using dynamic programming.
+ *
+ * This function computes the minimum cost of arranging books using dynamic programming.
+ * It loads owned books from a file, constructs a cost matrix, performs matrix chain multiplication,
+ * reconstructs the optimal ordering, and prints the minimum cost.
+ *
+ * @param pathToBooksFile The path to the file containing book information.
+ * @return 1 if successful, 0 otherwise.
+ */
+int minCostArrangingBooks(const char* pathToBooksFile) {
+	clearScreen();
+
+	// Load ownedBooks from file
+	// Assuming loadOwnedBooks function returns an array of Book structs
+	// Implement this function accordingly
+
+	Book* ownedBooks = NULL;
+	int numBooks = loadOwnedBooks(pathToBooksFile, &ownedBooks, loggedUser.id);
+
+
+	Book* books = (Book*)malloc(numBooks * sizeof(Book));
+	// Assuming ownedBooks array is copied to books array
+
+	int** costMatrix = (int**)malloc(numBooks * sizeof(int*));
+	for (int i = 0; i < numBooks; i++) {
+		costMatrix[i] = (int*)malloc(numBooks * sizeof(int));
+	}
+
+	// Fill cost matrix with maximum values
+	for (int i = 0; i < numBooks; i++) {
+		for (int j = 0; j < numBooks; j++) {
+			costMatrix[i][j] = INT_MAX;
+		}
+	}
+
+	// Fill diagonal with 0 as single book multiplication cost is 0
+	for (int i = 0; i < numBooks; i++) {
+		costMatrix[i][i] = 0;
+	}
+
+	// Perform Matrix Chain Multiplication Order Dynamic Programming
+	for (int chainLen = 2; chainLen < numBooks; chainLen++) {
+		for (int i = 0; i < numBooks - chainLen + 1; i++) {
+			int j = i + chainLen - 1;
+			for (int k = i; k <= j - 1; k++) {
+				int cost = costMatrix[i][k] + costMatrix[k + 1][j]
+					+ books[i - 1].cost * books[k].cost * books[j].cost;
+				costMatrix[i][j] = min(costMatrix[i][j], cost);
+			}
+		}
+	}
+
+	// Reconstruct optimal ordering
+	// This part depends on how you want to handle the ordering information
+
+	// For simplicity, let's just print the minimum cost
+	printf("Minimum cost of arranging books: %d\n", costMatrix[0][numBooks - 1]);
+
+	enterToContinue();
+
+	// Free dynamically allocated memory
+	for (int i = 0; i < numBooks; i++) {
+		free(costMatrix[i]);
+	}
+	free(costMatrix);
+	free(books);
+
+	return 1;
+}
+
+//Algorithms
+
+
+//BookCataloging
+/**
+ * @brief Allows users to perform book cataloging operations.
+ *
+ * This function allows users to perform various book cataloging operations such as adding, deleting,
+ * updating, and viewing books in the catalog. Users can select operations from a menu until they choose
+ * to return to the main menu.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return Always returns 0.
+ */
+int bookCataloging(const char* pathFileBooks) {
+	int choice;
+
+	while (1) {
+		bookCatalogingMenu();
+		choice = getInput();
+
+		if (choice == -2) {
+			handleInputError();
+			enterToContinue();
+			continue;
+		}
+
+		switch (choice) {
+		case 1:
+			addBookMenu(pathFileBooks);
+			break;
+		case 2:
+			deleteBookMenu(pathFileBooks);
+			break;
+		case 3:
+			updateBookMenu(pathFileBooks);
+			break;
+		case 4:
+			viewCatalog(pathFileBooks);
+			break;
+		case 5:
+			selectBooksByPriceMenu(pathFileBooks);
+			break;
+		case 6:
+			callMainMatrix(pathFileBooks);
+			break;
+		case 7:
+			minCostArrangingBooks(pathFileBooks);
+			break;
+		case 8:
+			return 0;
+		default:
+			clearScreen();
+			printf("Invalid choice. Please try again.\n");
+			enterToContinue();
+			break;
+		}
+	}
+}
+/**
+ * @brief Adds a new book to the book catalog.
+ *
+ * This function adds a new book to the book catalog file.
+ *
+ * @param newBook Pointer to the new book to be added.
+ * @param pathFileBooks The path to the file containing book information.
+ * @return 1 if the book is successfully added, 0 otherwise.
+ */
+int addBook(const Book* newBook, const char* pathFileBooks) {
+	FILE* file = fopen(pathFileBooks, "ab");
+	if (!file) { return 0; }
+	fwrite(newBook, sizeof(Book), 1, file);
+	fclose(file);
+	return 1;
+}
+/**
+ * @brief Deletes a book from the book catalog.
+ *
+ * This function deletes a book with the specified ID from the book catalog file.
+ *
+ * @param bookId The ID of the book to be deleted.
+ * @param pathFileBooks The path to the file containing book information.
+ * @param books Array of books.
+ * @param bookCount The number of books in the array.
+ * @return True if the book is successfully deleted, false otherwise.
+ */
+bool deleteBook(int bookId, const char* pathFileBooks, Book* books, int bookCount) {
+	bool isFound = false;
+	int i;
+	for (i = 0; i < bookCount; ++i) {
+		if (books[i].id == bookId) {
+			isFound = true;
+			for (int j = i; j < bookCount - 1; ++j) { books[j] = books[j + 1]; }
+			bookCount--;
+			break;
+		}
+	}
+
+	if (isFound) {
+		saveBooks(pathFileBooks, books, bookCount);
+		printf("Book with ID '%d' has been deleted successfully.\n", bookId);
+	}
+	else {
+		printf("There is no book with ID '%d'.\n", bookId);
+	}
+
+	return isFound;
+}
+/**
+ * @brief Updates information of a book in the book catalog.
+ *
+ * This function updates the information of a book with the specified ID in the book catalog file.
+ *
+ * @param books Array of books.
+ * @param bookCount The number of books in the array.
+ * @param bookId The ID of the book to be updated.
+ * @param title The new title of the book.
+ * @param author The new author of the book.
+ * @param genre The new genre of the book.
+ * @param cost The new cost of the book.
+ * @param pathFileBooks The path to the file containing book information.
+ * @return True if the book information is successfully updated, false otherwise.
+ */
+bool updateBook(Book* books, int bookCount, int bookId, const char* title, const char* author, const char* genre, int cost, const char* pathFileBooks) {
+	bool isFound = false;
+	for (int i = 0; i < bookCount; ++i) {
+		if (books[i].id == bookId) {
+			strncpy(books[i].title, title, sizeof(books[i].title) - 1);
+			strncpy(books[i].author, author, sizeof(books[i].author) - 1);
+			strncpy(books[i].genre, genre, sizeof(books[i].genre) - 1);
+			books[i].cost = cost;
+			books[i].title[sizeof(books[i].title) - 1] = '\0';
+			books[i].author[sizeof(books[i].author) - 1] = '\0';
+			books[i].genre[sizeof(books[i].genre) - 1] = '\0';
+			isFound = true;
+			break;
+		}
+	}
+	if (isFound) {
+		return saveBooks(pathFileBooks, books, bookCount);
+	}
+	else {
+		return false;
+	}
+}
+/**
+ * @brief Displays the catalog of owned books.
+ *
+ * This function displays the catalog of books owned by the current user.
+ *
+ * @param filePathBooks The path to the file containing book information.
+ * @return Always returns 1.
+ */
+int viewCatalog(const char* filePathBooks) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadOwnedBooks(filePathBooks, &books, loggedUser.id);
+
+	if (bookCount <= 0) {
+		printf("No books owned.\n");
+	}
+	else {
+		for (int i = 0; i < bookCount; i++) {
+			printf("ID: %d, Title: %s, Author: %s, Genre: %s, Cost: %d\n",
+				books[i].id, books[i].title, books[i].author, books[i].genre, books[i].cost);
+		}
+	}
+
+	enterToContinue();
+	free(books);
+	return 1;
+}
