@@ -1705,3 +1705,123 @@ int suggestBooksToBorrow(const char* pathFileBooks) {
 
 	return suggestedCount;
 }
+//Wishlist
+/**
+ * @brief Deletes a book from the wishlist.
+ *
+ * This function deletes a book from the wishlist by its ID.
+ *
+ * @param bookId The ID of the book to delete.
+ * @param pathFileWishlist The path to the wishlist file.
+ * @param books An array of books in the wishlist.
+ * @param bookCount The number of books in the wishlist.
+ * @return true if the book is successfully deleted, false otherwise.
+ */
+bool deleteBookToWishlist(int bookId, const char* pathFileWishlist, Book* books, int bookCount) {
+	bool isFound = false;
+	int i;
+	for (i = 0; i < bookCount; ++i) {
+		if (books[i].id == bookId) {
+			isFound = true;
+			for (int j = i; j < bookCount - 1; ++j) { books[j] = books[j + 1]; }
+			bookCount--;
+			break;
+		}
+	}
+
+	if (isFound) {
+		saveBooks(pathFileWishlist, books, bookCount);
+		printf("Book with ID '%d' has been deleted successfully.\n", bookId);
+	}
+	else {
+		printf("There is no book with ID '%d'.\n", bookId);
+	}
+
+	return isFound;
+}
+/**
+ * @brief Adds a book to the wishlist.
+ *
+ * This function adds a new book to the wishlist.
+ *
+ * @param newBook Pointer to the new book to add.
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 1 if the book is successfully added, 0 otherwise.
+ */
+int addBookToWishlist(const Book* newBook, const char* pathFileWishlist) {
+	FILE* file = fopen(pathFileWishlist, "ab");
+	if (!file) { return 0; }
+	fwrite(newBook, sizeof(Book), 1, file);
+	fclose(file);
+	return 1;
+}
+/**
+ * @brief Displays a menu for adding a book to the wishlist.
+ *
+ * This function prompts the user to input details of a book and adds it to the wishlist.
+ *
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 1 if the book is successfully added, 0 otherwise.
+ */
+int addBookToWishlistMenu(const char* pathFileWishlist) {
+	clearScreen();
+	Book newBook;
+
+	printf("Enter book name: ");
+	fgets(newBook.title, sizeof(newBook.title), stdin);
+	newBook.title[strcspn(newBook.title, "\n")] = 0;
+
+	printf("Enter author: ");
+	fgets(newBook.author, sizeof(newBook.author), stdin);
+	newBook.author[strcspn(newBook.author, "\n")] = 0;
+
+	printf("Enter Genre: ");
+	fgets(newBook.genre, sizeof(newBook.genre), stdin);
+	newBook.genre[strcspn(newBook.genre, "\n")] = 0;
+
+	printf("Enter Cost: ");
+	int cost = getInput();
+	if (cost < 0) { printf("Invalid input for cost.\n"); enterToContinue(); return 0; }
+	newBook.cost = cost;
+
+	newBook.owner = loggedUser;
+	newBook.isBorrowed = 0;
+	newBook.id = getNewWishlistId(pathFileWishlist);
+
+	if (!addBookToWishlist(&newBook, pathFileWishlist)) { printf("Failed to add book.\n"); enterToContinue(); return 0; }
+
+	printf("Book added successfully.\n");
+	enterToContinue();
+	return 1;
+}
+/**
+ * @brief Displays a menu for deleting a book from the wishlist.
+ *
+ * This function prompts the user to input the ID of the book to delete from the wishlist.
+ *
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return true if the book is successfully deleted, false otherwise.
+ */
+bool deleteBookFromWishlistMenu(const char* pathFileWishlist) {
+	clearScreen();
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileWishlist, &books);
+	if (bookCount == 0) {
+		printf("No books available to delete.\n");
+		enterToContinue();
+		return false;
+	}
+
+	viewCatalogForFunc(pathFileWishlist);
+	printf("Enter the ID of the book to delete: ");
+	int bookId = getInput();
+
+	if (bookId < 0) { handleInputError(); enterToContinue(); return false; }
+
+	bool result = deleteBookToWishlist(bookId, pathFileWishlist, books, bookCount);
+	enterToContinue();
+	if (books != NULL) {
+		free(books);
+	}
+	return result;
+}
