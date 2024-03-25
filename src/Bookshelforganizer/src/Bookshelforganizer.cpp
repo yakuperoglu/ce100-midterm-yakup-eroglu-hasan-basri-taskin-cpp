@@ -408,3 +408,100 @@ int loadBooksForUser(const char* pathFileBooks, int userId, Book** filteredBooks
 	return size;
 }
 
+/**
+ * @brief Loads loaned histories from a file.
+ *
+ * This function loads loaned histories from the specified file. It reads loaned history
+ * records from the file and stores them in the dynamically allocated 'histories' array.
+ *
+ * @param pathFileHistories The path to the file containing loaned histories.
+ * @param histories A pointer to a pointer to LoanedHistory structures where loaded loaned histories will be stored.
+ * @return The number of loaned histories loaded from the file, or 0 if the file cannot be opened or is empty.
+ */
+int loadLoanedHistories(const char* pathFileHistories, LoanedHistory** histories) {
+	FILE* file = fopen(pathFileHistories, "rb+");
+	if (!file) {
+		file = fopen(pathFileHistories, "wb+");
+	}
+
+	fseek(file, 0, SEEK_END);
+	long fileSize = ftell(file);
+	if (fileSize == 0) {
+		*histories = NULL;
+		fclose(file);
+		return 0;
+	}
+
+	rewind(file);
+	int count = fileSize / sizeof(LoanedHistory);
+	*histories = (LoanedHistory*)malloc(fileSize);
+
+	fread(*histories, sizeof(LoanedHistory), count, file);
+	fclose(file);
+
+	return count;
+}
+
+/**
+ * @brief Saves loaned histories to a file.
+ *
+ * This function saves loaned history records to the specified file.
+ *
+ * @param pathFileHistories The path to the file where loaned histories will be saved.
+ * @param histories An array of LoanedHistory structures containing loaned history records.
+ * @param count The number of loaned histories to save.
+ * @return 1 if successful, 0 otherwise.
+ */
+int saveLoanedHistories(const char* pathFileHistories, LoanedHistory* histories, int count) {
+	FILE* file = fopen(pathFileHistories, "wb");
+
+	fwrite(histories, sizeof(LoanedHistory), count, file);
+	fclose(file);
+
+	return 1;
+}
+
+//Load
+
+//Algorithms
+
+//quick Sort
+/**
+ * @brief Swaps two Book structures.
+ *
+ * This function swaps the contents of two Book structures.
+ *
+ * @param a Pointer to the first Book structure.
+ * @param b Pointer to the second Book structure.
+ */
+void swap(Book* a, Book* b) {
+	Book temp = *a;
+	a = b;
+	*b = temp;
+}
+/**
+ * @brief Partitions an array of books based on a pivot element.
+ *
+ * This function partitions an array of books based on a pivot element (the ID of
+ * the last element in the array). It rearranges the elements of the array in such
+ * a way that all elements smaller than the pivot are placed before it, and all
+ * elements greater than or equal to the pivot are placed after it.
+ *
+ * @param arr The array of books to partition.
+ * @param low The index of the first element of the array.
+ * @param high The index of the last element of the array.
+ * @return The index of the pivot element after partitioning.
+ */
+int partition(Book arr[], int low, int high) {
+	int pivot = arr[high].id;
+	int i = low - 1;
+
+	for (int j = low; j <= high - 1; j++) {
+		if (arr[j].id < pivot) {
+			i++;
+			swap(&arr[i], &arr[j]);
+		}
+	}
+	swap(&arr[i + 1], &arr[high]);
+	return (i + 1);
+}
