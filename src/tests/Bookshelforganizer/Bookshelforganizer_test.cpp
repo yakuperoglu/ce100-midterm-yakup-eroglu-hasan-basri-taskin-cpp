@@ -411,3 +411,60 @@ TEST_F(TryTest, loadLoanedHistoriesTest_EmptyFile) {
 	EXPECT_EQ(0, historyCount);
 	EXPECT_EQ(nullptr, loadedHistories);
 }
+
+TEST_F(TryTest, loadLoanedHistoriesTest_NonEmptyFile) {
+	const char* pathFileHistories = "non_empty_file.bin";
+
+	FILE* file = fopen(pathFileHistories, "wb");
+	if (file) {
+		LoanedHistory histories[] = {
+			{1, "Book 1", 1, "John", 2, "Alice", 1, 0},
+			{2, "Book 2", 2, "Alice", 3, "Bob", 0, 0}
+		};
+		fwrite(histories, sizeof(LoanedHistory), 2, file);
+		fclose(file);
+	}
+
+	LoanedHistory* loadedHistories = NULL;
+	int historyCount = loadLoanedHistories(pathFileHistories, &loadedHistories);
+
+	EXPECT_EQ(2, historyCount);
+	EXPECT_NE(nullptr, loadedHistories);
+
+	free(loadedHistories);
+}
+
+TEST_F(TryTest, loadLoanedHistoriesTest_InvalidFile) {
+	const char* pathFileHistories = "non_existent_file3.bin";
+
+	LoanedHistory* loadedHistories = NULL;
+	int historyCount = loadLoanedHistories(pathFileHistories, &loadedHistories);
+
+	EXPECT_EQ(0, historyCount);
+	EXPECT_EQ(nullptr, loadedHistories);
+}
+
+TEST_F(TryTest, saveLoanedHistoriesTest_FileOpened) {
+	const char* pathFileHistories = "testHistories.bin";
+
+	int result = saveLoanedHistories(pathFileHistories, nullptr, 0);
+
+	EXPECT_EQ(1, result);
+
+	FILE* file = fopen(pathFileHistories, "rb");
+	EXPECT_NE(nullptr, file);
+
+	fclose(file);
+	remove(pathFileHistories);
+}
+
+TEST_F(TryTest, bookCatalogingTest_1) {
+	simulateUserInput("1\nasd\nasd\nasd\n23\n\n8\n");
+
+	bool result = bookCataloging(testFilePathBooks);
+
+	resetStdinStdout();
+
+
+	EXPECT_FALSE(result);
+}
