@@ -577,3 +577,197 @@ TEST_F(TryTest, deleteBookTest_IsfoundFalse) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, updateBookTest_NotFound) {
+	const char* pathFileBooks = "testBooks.bin";
+	Book books[3] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30}
+	};
+	int bookCount = 3;
+
+	bool result = updateBook(books, bookCount, 10, "New Title", "New Author", "New Genre", 50, pathFileBooks);
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, deleteBookMenuTest_InvalidBookId) {
+	const char* pathFileBooks = "test_books.bin";
+
+	simulateUserInput("-1\n6asd\n\n");
+
+	bool result = deleteBookMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, updateBookMenuTest_noBookId) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	simulateUserInput("-1\n6asd\n\n");
+
+	bool result = updateBookMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, updateBookMenuTest_yesCost) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	simulateUserInput("2\nasd\nasd\nasd\n6\nasd\n");
+
+	bool result = updateBookMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, updateBookMenuTest_noCost) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	simulateUserInput("2\nasd\nasd\nasd\n-1\n\n6\n");
+
+	bool result = updateBookMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, updateBookMenuTest_wrongId) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	simulateUserInput("43\nasd\nasd\nasd\n13\n\n6\n");
+
+	bool result = updateBookMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, selectBooksByPriceMenuTest_All) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	Book books[5] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Emma", "", "", ""}, 0, 40},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "David", "", "", ""}, 0, 50}
+	};
+
+	saveBooks(testFilePathBooks, books, 5);
+
+	simulateUserInput("43\nasd\nasd\nasd\n13\n\n6\n");
+
+	bool result = selectBooksByPriceMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, selectBooksByPriceMenuTest_budgetNoMoney) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	Book books[5] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Emma", "", "", ""}, 0, 40},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "David", "", "", ""}, 0, 50}
+	};
+
+	saveBooks(testFilePathBooks, books, 5);
+
+	simulateUserInput("-3\nasd\nasd\nasd\n13\n\n6\n");
+
+	bool result = selectBooksByPriceMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, calculateBookCostsTest_BooksFound) {
+	const char* pathFileBooks = "testbooks.bin";
+
+	Book books[5] = {
+		{1, "Book 1", "Author 1", "Genre 1", {1, "John", "", "", ""}, 0, 10},
+		{2, "Book 2", "Author 2", "Genre 2", {2, "Alice", "", "", ""}, 0, 20},
+		{3, "Book 3", "Author 3", "Genre 3", {3, "Bob", "", "", ""}, 0, 30},
+		{4, "Book 4", "Author 4", "Genre 4", {4, "Emma", "", "", ""}, 0, 40},
+		{5, "Book 5", "Author 5", "Genre 5", {5, "David", "", "", ""}, 0, 50}
+	};
+
+	saveBooks(testFilePathBooks, books, 5);
+
+	simulateUserInput("-3\nasd\nasd\nasd\n13\n\n6\n");
+
+	bool result = calculateBookCosts(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_TRUE(result);
+}
+
+TEST_F(TryTest, calculateBookCostsTest_BooksNotFound) {
+	const char* pathFileBooks = "testNoBooks.bin";
+
+	simulateUserInput("-3\nasd\nasd\nasd\n13\n\n6\n");
+
+	bool result = calculateBookCosts(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, CalculateBookCostsMenuTest_CheckFunctionality) {
+	const char* pathFileBooks = "testBooks.bin";
+
+	simulateUserInput("-3\nasd\nasd\nasd\n13\n\n6\n");
+
+	bool result = calculateBookCostsMenu(pathFileBooks);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, mainMenuTest_WrongInput) {
+	simulateUserInput("35\nasd\nasd\nasd\n3\n3");
+
+	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, mainMenuTest_1) {
+	simulateUserInput("1\nasd\nasd\nasd\n4\n3\n");
+
+	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
+
+TEST_F(TryTest, mainMenuTest_2) {
+	simulateUserInput("2\nasd\nasd\nasd\nasd\nas\n3\n3");
+
+	bool result = mainMenu(testFilePathUsers, testFilePathBooks, testFilePathLendingHistories, testFilePathWishlist);
+
+	resetStdinStdout();
+
+	EXPECT_FALSE(result);
+}
