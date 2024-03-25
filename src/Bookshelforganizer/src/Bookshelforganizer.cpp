@@ -1295,3 +1295,221 @@ int calculateBookCostsMenu(const char* pathFileBooks) {
 	enterToContinue();
 	return 0;
 }
+
+//BookCataloging
+
+
+//LoanManagement
+/**
+ * @brief Manages book loan operations.
+ *
+ * This function displays a menu for managing book loan operations such as borrowing, returning, and viewing borrowed books.
+ * It prompts the user to select an action and performs the corresponding operation.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return Always returns 0.
+ */
+int loanManagement(const char* pathFileBooks, const char* pathFileHistories) {
+	int choice;
+
+	while (1) {
+		loanManagementMenu();
+		choice = getInput();
+
+		if (choice == -2) {
+			handleInputError();
+			enterToContinue();
+			continue;
+		}
+
+		switch (choice) {
+		case 1:
+			giveBackBookMenu(pathFileBooks, pathFileHistories);
+			break;
+		case 2:
+			borrowBookMenu(pathFileBooks, pathFileHistories);
+			break;
+		case 3:
+			viewBorrowedBooks(pathFileHistories);
+			break;
+		case 4:
+			viewGivenBooks(pathFileHistories);
+			break;
+		case 5:
+			suggestBooksToBorrow(pathFileBooks);
+			break;
+		case 6:
+			return 0;
+		default:
+			printf("Invalid choice. Please try again.\n");
+			enterToContinue();
+			break;
+		}
+	}
+}
+
+/**
+ * @brief Borrows a book.
+ *
+ * This function borrows a book by updating its status in the catalog and adding a loan history entry.
+ *
+ * @param bookId The ID of the book to borrow.
+ * @param pathFileBooks The path to the file containing book information.
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return 1 if the book is successfully borrowed, 0 otherwise.
+ */
+int borrowBook(int bookId, const char* pathFileBooks, const char* pathFileHistories) {
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+	Book releatedBook;
+	int found = 0;
+
+	for (int i = 0; i < bookCount; i++) {
+		if (books[i].id == bookId && books[i].isBorrowed == 0 && books[i].owner.id != loggedUser.id) {
+			books[i].isBorrowed = 1;
+			releatedBook = books[i];
+			found = 1;
+			break;
+		}
+	}
+
+	if (!found) {
+		printf("Book not found, already borrowed, or you are trying to borrow your own book.\n");
+		free(books);
+		return 0;
+	}
+
+	if (!saveBooks(pathFileBooks, books, bookCount)) { printf("Error updating book information.\n"); free(books); return 0; }
+
+	LoanedHistory* histories = NULL;
+	int historyCount = loadLoanedHistories(pathFileHistories, &histories);
+
+	LoanedHistory newHistory;
+	newHistory.bookId = bookId;
+	newHistory.bookOwnerId = releatedBook.owner.id;
+	newHistory.debtorUserId = loggedUser.id;
+	newHistory.isApproved = 1;
+	newHistory.hasGivenBack = 0;
+
+	// Fixed size arrays cannot be cast directly because they are not a pointer type.
+	// Therefore, we use the strcpy function to copy strings.
+	strcpy(newHistory.bookName, releatedBook.title);
+	strcpy(newHistory.bookOwnerName, releatedBook.owner.name);
+	strcpy(newHistory.debtorUserName, loggedUser.name);
+
+
+	histories = (LoanedHistory*)realloc(histories, (historyCount + 1) * sizeof(LoanedHistory));
+	histories[historyCount] = newHistory;
+	historyCount++;
+
+	if (!saveLoanedHistories(pathFileHistories, histories, historyCount)) { printf("Failed to save the loan history.\n"); free(histories); free(books); return 0; }
+
+	free(histories);
+	free(books);
+	return 1;
+}
+
+/**
+ * @brief Gives back a borrowed book.
+ *
+ * This function marks a borrowed book as returned in the loan history and updates its status in the catalog.
+ *
+ * @param bookId The ID of the book to return.
+ * @param pathFileBooks The path to the file containing book information.
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return 1 if the book is successfully returned, 0 otherwise.
+ */
+int giveBackBook(int bookId, const char* pathFileBooks, const char* pathFileHistories) {
+	LoanedHistory* histories = NULL;
+	int historyCount = loadLoanedHistories(pathFileHistories, &histories);
+	int historyUpdated = 0;
+
+	for (int i = 0; i < historyCount; i++) {
+		if (histories[i].bookId == bookId && histories[i].debtorUserId == loggedUser.id && histories[i].hasGivenBack == 0) {
+			histories[i].hasGivenBack = 1;
+			historyUpdated = 1;
+			break;
+		}
+	}
+
+	if (!historyUpdated) {
+		printf("This book was not borrowed by you or it has already been returned.\n");
+		free(histories);
+		return 0;
+	}
+
+	if (!saveLoanedHistories(pathFileHistories, histories, historyCount)) { printf("Failed to update the loan history.\n"); free(histories); return 0; }
+
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+	for (int i = 0; i < bookCount; i++) {
+		if (books[i].id == bookId) {
+			books[i].isBorrowed = 0;
+			break;
+		}
+	}
+	if (!saveBooks(pathFileBooks, books, bookCount)) { printf("Failed to update book information.\n"); free(histories); free(books); return 0; }
+
+	free(histories);
+	free(books);
+	return 1;
+}
+
+/**
+ * @brief Displays the menu for borrowing a book.
+ *
+ * This function displays a menu for the user to select a book to borrow from the available options.
+ * It then borrows the selected book and updates the loan history.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @param pathFileHistories The path to the file containing loan histories.
+ * @return 1 if the book is successfully borrowed, 0 otherwise.
+ */
+int borrowBookMenu(const char* pathFileBooks, const char* pathFileHistories) {
+	clearScreen();
+	printf("Available Books to Borrow (excluding your own books):\n");
+
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+	if (bookCount > 0) {
+		int availableCount = 0;
+		for (int i = 0; i < bookCount; i++) {
+			if (books[i].isBorrowed == 0 && books[i].owner.id != loggedUser.id) {
+				printf("ID: %d Title: %s Author: %s Genre: %s\n", books[i].id, books[i].title, books[i].author, books[i].genre);
+				availableCount++;
+			}
+		}
+		if (availableCount == 0) {
+			printf("No available books to borrow.\n");
+			enterToContinue();
+			free(books);
+			return 0;
+		}
+	}
+	else {
+		printf("No books found.\n");
+		enterToContinue();
+		free(books);
+		return 0;
+	}
+
+	printf("\nEnter the ID of the Book to Borrow: ");
+	int bookId = getInput();
+
+	if (bookId == -1 || bookId == -2) {
+		handleInputError();
+		enterToContinue();
+		free(books);
+		return 0;
+	}
+
+	if (!borrowBook(bookId, pathFileBooks, pathFileHistories)) { printf("An error occurred while borrowing the book.\n"); }
+	else {
+		printf("The book has been successfully borrowed.\n");
+	}
+
+	enterToContinue();
+	free(books);
+	return 1;
+}
