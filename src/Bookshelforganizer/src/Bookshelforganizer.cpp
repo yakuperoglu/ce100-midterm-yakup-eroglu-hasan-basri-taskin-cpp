@@ -647,3 +647,118 @@ int max(int a, int b) {
 	return (a > b) ? a : b;
 }
 //Knapsack Implementation with Dynamic Programming
+
+//Binary Search
+/**
+ * @brief Performs binary search to find a book by title in a sorted array of books.
+ *
+ * This function performs binary search to find a book by title in a sorted array of books.
+ * It returns the index of the book if found, otherwise, it returns -1.
+ *
+ * @param books The array of books to search in.
+ * @param low The lowest index of the search range.
+ * @param high The highest index of the search range.
+ * @param targetTitle The title of the book to search for.
+ * @return The index of the book if found, otherwise -1.
+ */
+int binarySearchBookByTitle(Book books[], int low, int high, const char* targetTitle) {
+	while (low <= high) {
+		int mid = low + (high - low) / 2;
+		int res = strcmp(targetTitle, books[mid].title);
+
+		// Check if targetTitle is present at mid
+		if (res == 0)
+			return mid;
+
+		// If targetTitle greater, ignore left half
+		if (res > 0) low = mid + 1;
+
+		// If targetTitle is smaller, ignore right half
+		else high =
+			mid - 1;
+	}
+
+	// If we reach here, then the element was not present
+	return -1;
+}
+//Binary Search
+
+/**
+ * @brief Computes the minimum cost of arranging books using matrix chain multiplication.
+ *
+ * This function computes the minimum cost of arranging books using matrix chain multiplication.
+ * It constructs a cost matrix, performs matrix chain multiplication, and returns the minimum cost.
+ *
+ * @param p An array representing the dimensions of the matrices.
+ * @param n The number of matrices.
+ * @return The minimum cost of arranging books.
+ */
+int MatrixChainOrder(int p[], int n) {
+	int** m = (int**)malloc(n * sizeof(int*));
+	for (int i = 0; i < n; i++) {
+		m[i] = (int*)malloc(n * sizeof(int));
+	}
+
+	for (int i = 1; i < n; i++) {
+		m[i][i] = 0;
+	}
+
+	for (int L = 2; L < n; L++) {
+		for (int i = 1; i < n - L + 1; i++) {
+			int j = i + L - 1;
+			m[i][j] = INT_MAX;
+			for (int k = i; k <= j - 1; k++) {
+				int q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+				if (q < m[i][j]) {
+					m[i][j] = q;
+				}
+			}
+		}
+	}
+
+	int result = m[1][n - 1];
+
+	for (int i = 0; i < n; i++) {
+		free(m[i]);
+	}
+	free(m);
+
+	return result;
+}
+/**
+ * @brief Main function to calculate the minimum cost of arranging books.
+ *
+ * This function is the main entry point to calculate the minimum cost of arranging books.
+ * It loads book information from a file, constructs an array of costs, computes the minimum cost
+ * using MatrixChainOrder function, and prints the result.
+ *
+ * @param pathFileBooks The path to the file containing book information.
+ * @return 0 if successful, otherwise an error code.
+ */
+int mainMatrix(const char* pathFileBooks) {
+	Book* books = NULL;
+	int bookCount = loadBooks(pathFileBooks, &books);
+
+	if (bookCount <= 0) {
+		printf("No books found.");
+		enterToContinue();
+		return 0;
+	}
+
+	int* costs = (int*)malloc((bookCount + 1) * sizeof(int));
+	if (!costs) { printf("Memory allocation failed for costs array."); free(books); enterToContinue(); return 0; }
+
+	for (int i = 0; i < bookCount; i++) {
+		costs[i] = books[i].cost;
+	}
+
+	int result = MatrixChainOrder(costs, bookCount + 1);
+
+	printf("Minimum number of multiplications is %d\n", result);
+
+	free(costs);
+	free(books);
+	enterToContinue();
+
+	return 0;
+}
