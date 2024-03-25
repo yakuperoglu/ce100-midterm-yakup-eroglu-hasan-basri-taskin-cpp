@@ -2168,3 +2168,86 @@ int loginUser(User loginUser, const char* pathFileUsers) {
 	enterToContinue();
 	return 0;
 }
+
+/**
+ * @brief Displays a menu for user login.
+ *
+ * This function prompts the user to input their email and password for login.
+ *
+ * @param pathFileUsers The path to the user database file.
+ * @return 1 if the login process is completed successfully, 0 otherwise.
+ */
+int loginUserMenu(const char* pathFileUsers) {
+	clearScreen();
+	User loginUsers;
+
+	printf("Enter email: ");
+	fgets(loginUsers.email, sizeof(loginUsers.email), stdin);
+	loginUsers.email[strcspn(loginUsers.email, "\n")] = 0;
+
+	printf("Enter password: ");
+	fgets(loginUsers.password, sizeof(loginUsers.password), stdin);
+	loginUsers.password[strcspn(loginUsers.password, "\n")] = 0;
+
+	return loginUser(loginUsers, pathFileUsers);
+}
+
+//Register-Login
+
+
+//Menus
+/**
+ * @brief Handles user operations menu.
+ *
+ * This function displays the user operations menu and handles user input to navigate through different user operations.
+ *
+ * @param pathFileBooks The path to the books database file.
+ * @param pathFileHistories The path to the lending histories database file.
+ * @param pathFileWishlist The path to the wishlist database file.
+ * @return 0 when the user chooses to exit the menu.
+ */
+int userOperations(const char* pathFileBooks, const char* pathFileHistories, const char* pathFileWishlist) {
+	int choice;
+
+	while (1) {
+		userMenu();
+		choice = getInput();
+
+		if (choice == -2) {
+			handleInputError();
+			enterToContinue();
+			continue;
+		}
+
+		switch (choice) {
+		case 1:
+			bookCataloging(pathFileBooks);
+			break;
+		case 2:
+			loanManagement(pathFileBooks, pathFileHistories);
+			break;
+		case 3:
+			wishList(pathFileBooks, pathFileWishlist);
+			break;
+		case 4:
+			return 0;
+		default:
+			clearScreen();
+			printf("Invalid choice. Please try again.\n");
+			enterToContinue();
+			break;
+		}
+	}
+}
+
+/**
+ * @brief Handles the main menu of the program.
+ *
+ * This function displays the main menu of the program and handles user input to navigate through different options like login, registration, and exit.
+ *
+ * @param pathFileUsers The path to the users database file.
+ * @param pathFileBooks The path to the books database file.
+ * @param pathFileLendingHistories The path to the lending histories database file.
+ * @param pathFileWishlist The path to the wishlist database file.
+ * @return 0 when the user chooses to exit the program.
+ */
