@@ -101,3 +101,21 @@ TEST_F(TryTest, handleInputErrorTest) {
 
 	EXPECT_FALSE(result);
 }
+
+TEST_F(TryTest, getInputTest) {
+	simulateUserInput("5\n");
+	int result = getInput();
+	EXPECT_EQ(5, result);
+}
+
+TEST_F(TryTest, getInputTest_WrongInput) {
+	simulateUserInput("asd\n");
+	int result = getInput();
+	EXPECT_EQ(-2, result);
+}
+
+TEST_F(TryTest, getInputTest_EmptyInput) {
+	simulateUserInput("");
+	int result = getInput();
+	EXPECT_EQ(-1, result);
+}
