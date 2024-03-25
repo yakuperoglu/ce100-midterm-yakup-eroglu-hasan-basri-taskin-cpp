@@ -1920,3 +1920,110 @@ int searchWishlistMenu(const char* pathFileWishlist) {
 	free(books);
 	return 1;
 }
+
+/**
+ * @brief Marks a book in the wishlist as acquired and adds it to the user's book collection.
+ *
+ * This function prompts the user to input the ID of the book they have acquired from the wishlist and adds it to their book collection.
+ *
+ * @param pathFileBooks The path to the user's book collection file.
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 1 if the book is successfully marked as acquired and added to the collection, 0 otherwise.
+ */
+int markAsAcquiredMenu(const char* pathFileBooks, const char* pathFileWishlist) {
+	clearScreen();
+	printf("Your Wishlist:\n");
+
+	Book* wishlistBooks = NULL;
+	int wishlistCount = loadOwnedBooks(pathFileWishlist, &wishlistBooks, loggedUser.id);
+
+	if (wishlistCount <= 0) {
+		printf("Your wishlist is empty.\n");
+		enterToContinue();
+		return 0;
+	}
+
+	viewWishlistCatalogForFunc(pathFileWishlist);
+
+	printf("\nEnter the ID of the book you have acquired: ");
+	int acquiredBookId = getInput();
+
+	int i;
+	Book acquiredBook;
+	bool found = false;
+	for (i = 0; i < wishlistCount; i++) {
+		if (wishlistBooks[i].id == acquiredBookId) {
+			acquiredBook = wishlistBooks[i];
+			found = true;
+			break;
+		}
+	}
+
+	if (!found) {
+		printf("Book not found in your wishlist.\n");
+		enterToContinue();
+		return 0;
+	}
+
+	for (int j = i; j < wishlistCount - 1; j++) { wishlistBooks[j] = wishlistBooks[j + 1]; }
+	wishlistCount--;
+
+	saveBooks(pathFileWishlist, wishlistBooks, wishlistCount);
+
+	acquiredBook.id = getNewBookId(pathFileBooks);
+	acquiredBook.isBorrowed = 0;
+	addBook(&acquiredBook, pathFileBooks);
+
+	printf("Book marked as acquired and added to your book collection.\n");
+	enterToContinue();
+	free(wishlistBooks);
+	return 1;
+}
+
+/**
+ * @brief Manages the user's wishlist.
+ *
+ * This function provides a menu for the user to manage their wishlist, including adding, deleting, and viewing books in the wishlist.
+ *
+ * @param pathFileBooks The path to the user's book collection file.
+ * @param pathFileWishlist The path to the wishlist file.
+ * @return 0 upon successful completion of managing the wishlist.
+ */
+int wishList(const char* pathFileBooks, const char* pathFileWishlist) {
+	int choice;
+
+	while (1) {
+		wishListMenu();
+		choice = getInput();
+
+		if (choice == -2) {
+			handleInputError();
+			enterToContinue();
+			continue;
+		}
+
+		switch (choice) {
+		case 1:
+			addBookToWishlistMenu(pathFileWishlist);
+			break;
+		case 2:
+			deleteBookFromWishlistMenu(pathFileWishlist);
+			break;
+		case 3:
+			markAsAcquiredMenu(pathFileBooks, pathFileWishlist);
+			break;
+		case 4:
+			viewWishlist(pathFileWishlist);
+			break;
+		case 5:
+			searchWishlistMenu(pathFileWishlist);
+			break;
+		case 6:
+			return 0;
+		default:
+			printf("Invalid choice. Please try again.\n");
+			enterToContinue();
+			break;
+		}
+	}
+}
