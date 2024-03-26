@@ -1,0 +1,18 @@
+unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
+Stack trace:
+
+
+[  FAILED  ] BookshelforganizerTest.minCostArrangingBooksTest (17 ms)
+[----------] 116 tests from BookshelforganizerTest (2431 ms total)
+
+[----------] Global test environment tear-down
+[==========] 116 tests from 1 test suite ran. (2434 ms total)
+[  PASSED  ] 111 tests.
+[  FAILED  ] 5 tests, listed below:
+[  FAILED  ] BookshelforganizerTest.userOperationsTest_1
+[  FAILED  ] BookshelforganizerTest.GiveBackBookTest_GiveBackBook_SuccessfulGiveBack
+[  FAILED  ] BookshelforganizerTest.GiveBackBookMenu_ReturnBook_SuccessfulReturn
+[  FAILED  ] BookshelforganizerTest.SuggestBooksToBorrow_SuggestedBooksReturned_Correctly
+[  FAILED  ] BookshelforganizerTest.minCostArrangingBooksTest
+
+ 5 FAILED TESTS

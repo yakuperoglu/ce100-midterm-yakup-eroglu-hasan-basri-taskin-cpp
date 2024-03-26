@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "../../Bookshelforganizer/header/Bookshelforganizer.h"  
+#include "../../bookshelforganizer/header/bookshelforganizer.h"  
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -1667,7 +1667,7 @@ TEST_F(BookshelforganizerTest, minCostArrangingBooksTest) {
 }
 
 int main(int argc, char** argv) {
-#ifdef ENABLE_TRY_TEST
+#ifdef ENABLE_BOOKSHELFORGANIZER_TEST
 	::testing::InitGoogleTest(&argc, argv);
 	::testing::GTEST_FLAG(color) = "no";
 	return RUN_ALL_TESTS();

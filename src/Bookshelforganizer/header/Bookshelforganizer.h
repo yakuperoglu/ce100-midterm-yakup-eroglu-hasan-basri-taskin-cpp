@@ -1,5 +1,5 @@
-#ifndef TRY_H
-#define TRY_H
+#ifndef BOOKSHELFORGANIZER_H
+#define BOOKSHELFORGANIZER_H
 
 #include <iostream>
 /**
@@ -112,7 +112,6 @@ int saveLoanedHistories(const char* pathFileHistories, LoanedHistory* histories,
 
 
 //ALGORITHMS
-
 void swap(Book* a, Book* b);
 
 int partition(Book arr[], int low, int high);
@@ -138,6 +137,7 @@ int callMainMatrix(const char* pathFileBooks);
 int min(int a, int b);
 
 int minCostArrangingBooks(const char* pathToBooksFile);
+
 
 //ALGORITHMS
 
